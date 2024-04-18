@@ -1,0 +1,128 @@
+{
+  "user": {
+    "format_video": {
+      "height_px": 540,
+      "width_px": 960,
+      "fps": 25
+    },
+    "run_dlc": {
+      "dlc_config_path": "Z:\\PRJ-BowenLab\\TimLee\\releases\\dlc_models\\aggrModel_960px\\config.yaml"
+    },
+    "calculate_params": {
+      "start_frame": {
+        "window_sec": 3,
+        "pcutoff": 0.9
+      },
+      "stop_frame": {
+        "dur_sec": 600
+      },
+      "px_per_mm": {
+        "point_a": "TopLeft",
+        "point_b": "TopRight",
+        "dist_mm": 400
+      }
+    },
+    "preprocess": {
+      "interpolate_points": {
+        "pcutoff": 0.5
+      },
+      "calc_body_centre": {
+        "bodyparts": [
+          "LeftFlankMid",
+          "BodyCentre",
+          "RightFlankMid",
+          "LeftFlankRear",
+          "RightFlankRear",
+          "TailBase1"
+        ]
+      },
+      "refine_identities": {
+        "marked": "mouse1marked",
+        "unmarked": "mouse2unmarked",
+        "marking": "AnimalColourMark",
+        "window_sec": 0.5,
+        "metric": "rolling"
+      }
+    },
+    "evaluate": {
+      "keypoints_plots": {
+        "bodyparts": ["Nose", "BodyCentre", "TailBase1"]
+      },
+      "eval_vid": {
+        "funcs_names": ["Keypoints", "Behavs"],
+        "pcutoff": 0.5,
+        "colour_level": "individuals",
+        "radius": 4,
+        "cmap": "rainbow"
+      }
+    },
+    "extract_features": {
+      "individuals": ["mouse1marked", "mouse2unmarked"],
+      "bodyparts": [
+        "LeftEar",
+        "RightEar",
+        "Nose",
+        "BodyCentre",
+        "LeftFlankMid",
+        "RightFlankMid",
+        "TailBase1",
+        "TailTip4"
+      ]
+    },
+    "classify_behaviour": {
+      "models": [
+        "Z:\\PRJ-BowenLab\\TimLee\\resources\\simba_model_aggr\\behav_models\\fight\\model_configs.json",
+        "Z:\\PRJ-BowenLab\\TimLee\\resources\\simba_model_aggr\\behav_models\\marked_fight\\model_configs.json",
+        "Z:\\PRJ-BowenLab\\TimLee\\resources\\simba_model_aggr\\behav_models\\unmarked_fight\\model_configs.json"
+      ],
+      "min_window_frames": 2
+    },
+    "score_behaviour": {
+      "user_behavs": ["example", "more"]
+    },
+    "analyse": {
+      "analyse_thigmotaxis": {
+        "threshold_mm": 50
+      },
+      "analyse_center_crossing": {
+        "threshold_mm": 125
+      },
+      "analyse_speed": {
+        "smoothing_sec": 1
+      },
+      "analyse_social_distance": {
+        "smoothing_sec": 1
+      },
+      "analyse_freezing": {
+        "window_sec": 2,
+        "threshold_mm": 5,
+        "smoothing_sec": 0.2
+      },
+      "bins_sec": [60, 120, 300, 600],
+      "custom_bins_sec": [60, 120, 300, 600]
+    },
+    "analysis_eval": {
+      "vis_sec": 2,
+      "cmap": "Pastel1"
+    }
+  },
+  "auto": {
+    "raw_vid": {
+      "height_px": 1080,
+      "width_px": 1920,
+      "total_frames": 750,
+      "fps": 25.0,
+      "dur_sec": 30.0
+    },
+    "formatted_vid": {
+      "height_px": 540,
+      "width_px": 960,
+      "total_frames": 450,
+      "fps": 15.0,
+      "dur_sec": 30.0
+    },
+    "start_frame": 0,
+    "stop_frame": 9000,
+    "px_per_mm": 0.9968603972282214
+  }
+}

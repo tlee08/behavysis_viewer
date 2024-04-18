@@ -1,0 +1,530 @@
+{
+  "start": 0,
+  "stop": 750,
+  "behaviours": {
+    "fight": [
+      {
+        "start": 50,
+        "stop": 64,
+        "actual": -1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 77,
+        "stop": 77,
+        "actual": 1,
+        "example": 1,
+        "more": 1
+      },
+      {
+        "start": 81,
+        "stop": 208,
+        "actual": 0,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 211,
+        "stop": 214,
+        "actual": 0,
+        "example": 0,
+        "more": 1
+      },
+      {
+        "start": 217,
+        "stop": 412,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 418,
+        "stop": 418,
+        "actual": 0,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 421,
+        "stop": 474,
+        "actual": 1,
+        "example": 0,
+        "more": 1
+      },
+      {
+        "start": 480,
+        "stop": 480,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 484,
+        "stop": 504,
+        "actual": 0,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 507,
+        "stop": 513,
+        "actual": 0,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 520,
+        "stop": 538,
+        "actual": 1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 541,
+        "stop": 541,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 551,
+        "stop": 644,
+        "actual": 0,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 647,
+        "stop": 711,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 714,
+        "stop": 714,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 724,
+        "stop": 724,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 731,
+        "stop": 732,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 735,
+        "stop": 749,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      }
+    ],
+    "marked_fight": [
+      {
+        "start": 44,
+        "stop": 44,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 47,
+        "stop": 63,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 81,
+        "stop": 82,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 87,
+        "stop": 205,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 221,
+        "stop": 221,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 227,
+        "stop": 373,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 377,
+        "stop": 402,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 407,
+        "stop": 407,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 411,
+        "stop": 412,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 418,
+        "stop": 453,
+        "actual": 1,
+        "example": 1,
+        "more": 1
+      },
+      {
+        "start": 460,
+        "stop": 475,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 488,
+        "stop": 489,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 493,
+        "stop": 504,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 507,
+        "stop": 512,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 517,
+        "stop": 538,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 551,
+        "stop": 717,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      },
+      {
+        "start": 721,
+        "stop": 749,
+        "actual": 1,
+        "example": 1,
+        "more": 0
+      }
+    ],
+    "unmarked_fight": [
+      {
+        "start": 51,
+        "stop": 61,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 91,
+        "stop": 105,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 111,
+        "stop": 166,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 180,
+        "stop": 187,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 190,
+        "stop": 205,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 221,
+        "stop": 221,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 228,
+        "stop": 243,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 257,
+        "stop": 274,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 277,
+        "stop": 282,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 287,
+        "stop": 295,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 298,
+        "stop": 298,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 301,
+        "stop": 301,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 306,
+        "stop": 324,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 327,
+        "stop": 332,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 335,
+        "stop": 352,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 355,
+        "stop": 371,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 382,
+        "stop": 383,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 387,
+        "stop": 387,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 392,
+        "stop": 403,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 433,
+        "stop": 445,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 448,
+        "stop": 452,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 463,
+        "stop": 475,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 495,
+        "stop": 504,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 521,
+        "stop": 537,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 557,
+        "stop": 565,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 573,
+        "stop": 573,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 577,
+        "stop": 602,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 606,
+        "stop": 606,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 611,
+        "stop": 618,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 621,
+        "stop": 625,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 629,
+        "stop": 629,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 633,
+        "stop": 633,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 641,
+        "stop": 644,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 650,
+        "stop": 652,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 655,
+        "stop": 687,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 690,
+        "stop": 690,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 694,
+        "stop": 698,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 703,
+        "stop": 712,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      },
+      {
+        "start": 741,
+        "stop": 747,
+        "actual": -1,
+        "example": 0,
+        "more": 0
+      }
+    ]
+  }
+}
