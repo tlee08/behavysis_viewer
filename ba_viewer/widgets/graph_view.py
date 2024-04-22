@@ -1,19 +1,15 @@
 import sys
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from pyqtgraph import BarGraphItem, InfiniteLine, PlotWidget, mkPen
-import matplotlib.pyplot as plt
-from pyqtgraph.exporters import ImageExporter, Exporter
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QImage, QPixmap
-from PySide6.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
-
-from ba_viewer.pydantic_models.bouts import Bouts
+from ba_core.data_models.bouts import Bouts
 from ba_viewer.pydantic_models.experiment_configs import ExperimentConfigs
-
 from ba_viewer.utils.cv2_qt_mixin import Cv2QtMixin
+from pyqtgraph import BarGraphItem, InfiniteLine, PlotWidget, mkPen
+from pyqtgraph.exporters import ImageExporter
+from PySide6.QtWidgets import QApplication
 
 
 class GraphView(PlotWidget):
@@ -98,7 +94,7 @@ class GraphView(PlotWidget):
         return img_cv
 
 
-from ba_viewer.utils import behavs_df_utils
+from ba_core.mixins.behaviour_mixin import BehaviourMixin
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -112,7 +108,7 @@ if __name__ == "__main__":
 
     behavs_df = pd.read_feather(fp)
     # frames_df to bouts_dict
-    bouts_dict = behavs_df_utils.frames_to_bouts(behavs_df)
+    bouts_dict = BehaviourMixin.frames_2_bouts(behavs_df)
     # Updating graph_viewer
     start_ls = np.array([])
     stop_ls = np.array([])

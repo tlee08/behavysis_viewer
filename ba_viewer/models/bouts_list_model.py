@@ -1,14 +1,11 @@
 import numpy as np
+from ba_core.data_models.bouts import Bouts
+from ba_core.mixins.behaviour_mixin import BehaviourMixin
+from ba_core.mixins.df_io_mixin import DFIOMixin
+from ba_viewer.pydantic_models.experiment_configs import ExperimentConfigs
+from ba_viewer.utils.constants import VALUE2COLOR
 from PySide6.QtCore import QAbstractListModel, Qt
 from PySide6.QtGui import QColor
-
-from ba_viewer.pydantic_models.bouts import Bouts
-from ba_viewer.utils.constants import VALUE2COLOR
-
-from ba_viewer.pydantic_models.experiment_configs import ExperimentConfigs
-
-from ba_viewer.utils import behavs_df_utils
-from ba_viewer.utils.funcs import read_feather
 
 
 class BoutsListModel(QAbstractListModel):
@@ -45,11 +42,11 @@ class BoutsListModel(QAbstractListModel):
         # Getting necessary configs
         user_behavs = configs.user.classify_behaviours.user_behavs
         # Loading data
-        behavs_df = read_feather(fp)
+        behavs_df = DFIOMixin.read_feather(fp)
         # Adding actual and user_behavs to behavs_df (if they aren't already there)
-        behavs_df = behavs_df_utils.frames_add_behaviour(behavs_df, user_behavs)
+        behavs_df = BehaviourMixin.frames_add_behaviour(behavs_df, user_behavs)
         # behavs_df to bouts
-        self.bouts = behavs_df_utils.frames_to_bouts(behavs_df)
+        self.bouts = BehaviourMixin.frames_2_bouts(behavs_df)
         # print(self.bouts.model_dumps_json(indent=2))
         self.layoutChanged.emit()
 

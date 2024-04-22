@@ -5,7 +5,20 @@ from multiprocessing.sharedctypes import Synchronized
 
 import cv2
 import numpy as np
-import pandas as pd
+from ba_core.mixins.behaviour_mixin import BehaviourMixin
+from ba_core.mixins.df_io_mixin import DFIOMixin
+from ba_viewer.models.bout_inspect_list_model import BoutInspectListModel
+from ba_viewer.models.bouts_list_model import BoutsListModel
+from ba_viewer.models.exp_file_manager import ExpFileManager
+from ba_viewer.models.keypoints_model import KeypointsModel
+from ba_viewer.models.vid_model import VidModel
+from ba_viewer.pydantic_models.experiment_configs import ExperimentConfigs
+from ba_viewer.ui.main_ui import Ui_MainWindow
+from ba_viewer.utils.constants import STATUS_MSG_TIMEOUT
+from ba_viewer.widgets.graph_view import GraphView
+from ba_viewer.windows.help import HelpWindow
+from ba_viewer.windows.settings import SettingsWindow
+from ba_viewer.windows.window_mixin import WindowMixin
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -19,28 +32,9 @@ from PySide6.QtWidgets import (
 )
 from tqdm import trange
 
-from ba_viewer.models.bout_inspect_list_model import BoutInspectListModel
-from ba_viewer.models.bouts_list_model import BoutsListModel
-from ba_viewer.models.exp_file_manager import ExpFileManager
-from ba_viewer.models.keypoints_model import KeypointsModel
-from ba_viewer.models.vid_model import VidModel
-from ba_viewer.pydantic_models.experiment_configs import ExperimentConfigs
-from ba_viewer.ui.main_ui import Ui_MainWindow
-from ba_viewer.utils import behavs_df_utils
-from ba_viewer.utils.constants import STATUS_MSG_TIMEOUT
-from ba_viewer.utils.funcs import (
-    read_configs,
-    read_feather,
-    write_configs,
-    write_feather,
-)
-from ba_viewer.widgets.graph_view import GraphView
-from ba_viewer.windows.help import HelpWindow
-from ba_viewer.windows.settings import SettingsWindow
-from ba_viewer.windows.window_mixin import WindowMixin
-
 
 class MainWindow(QMainWindow, WindowMixin):
+    """__summary__"""
 
     ui: Ui_MainWindow
     preferences_window: SettingsWindow
@@ -98,6 +92,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self._init_timer_vid()
 
     def _init_models(self):
+        """__summary__"""
         # Init file manager
         self.file_manager = ExpFileManager()
         # Init vid and keypoints models
@@ -111,6 +106,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.curr_i = 0
 
     def _init_model_views(self):
+        """__summary__"""
         # MODEL VIEWS
         # Linking BoutsModel
         self.ui.bouts_view.setModel(self.bouts_model)
@@ -118,6 +114,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.ui.bout_inspect_view.setModel(self.bout_inspect_model)
 
     def _init_conns_models(self):
+        """__summary__"""
         # SIGNALS AND SLOTS: MODELS
         # bouts_model
         m = self.bouts_model
@@ -131,6 +128,7 @@ class MainWindow(QMainWindow, WindowMixin):
         )
 
     def _init_conns_views(self):
+        """__summary__"""
         # SIGNALS AND SLOTS: VIEWS
         # bouts_view
         v = self.ui.bouts_view.selectionModel()
@@ -140,6 +138,7 @@ class MainWindow(QMainWindow, WindowMixin):
         v.selectionChanged.connect(v.clearSelection)
 
     def _init_conns_scoring(self):
+        """__summary__"""
         # SIGNALS AND SLOTS: SCORING BOUT
         # Choosing is_actual bout
         for k, v in self.rbtns.items():
@@ -148,6 +147,7 @@ class MainWindow(QMainWindow, WindowMixin):
         # NOTE: already done in bout_inspect_model.setData, when CheckStateRole changes.
 
     def _init_conns_vid(self):
+        """__summary__"""
         # SIGNALS AND SLOTS: VIDEO AND PLOT
         # Handle user moving slider
         self.ui.slider.sliderMoved.connect(self.set_frame)
@@ -170,6 +170,7 @@ class MainWindow(QMainWindow, WindowMixin):
         )
 
     def _init_conns_io(self):
+        """__summary__"""
         # SIGNALS AND SLOTS: I/O
         # Handle opening settings and help windows
         self.ui.action_settings.triggered.connect(
@@ -190,6 +191,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.ui.action_quit.triggered.connect(self.close)
 
     def _init_conns_shortcuts(self):
+        """__summary__"""
         # SLOTS AND SIGNALS: KEYBOARD SHORTCUTS
         self.ui.action_open.setShortcut(QKeySequence.StandardKey.Open)
         self.ui.action_save.setShortcut(QKeySequence.StandardKey.Save)
@@ -198,6 +200,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.ui.action_help.setShortcut(Qt.Key.Key_H)
 
     def _init_conns_hotkeys(self):
+        """__summary__"""
         # SLOTS AND SIGNALS: HOTKEYS
         # Handle video hot-keys
         QShortcut(Qt.Key.Key_Left, self).activated.connect(self.ui.vid_back_btn.click)
@@ -216,17 +219,20 @@ class MainWindow(QMainWindow, WindowMixin):
         )
 
     def _init_timer_vid(self):
+        """__summary__"""
         # TIMERS AND THREADS
         # Making timer to play video
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
 
     def resize_viewer(self, width, height):
+        """__summary__"""
         self.ui.vid_viewer.setFixedSize(width, height)
         self.ui.graph_viewer.setFixedWidth(width)
         self.ui.slider.setFixedWidth(width)
 
     def closeEvent(self, event):
+        """__summary__"""
         # Perform actions when the window is about to close
         reply = QMessageBox.question(
             self,
@@ -242,6 +248,7 @@ class MainWindow(QMainWindow, WindowMixin):
             event.ignore()
 
     def open(self, fp: str | None = None) -> None:
+        """__summary__"""
         if not fp:
             fp = QFileDialog.getOpenFileName(
                 self, "", "", "config file (*.json *.yaml)"
@@ -256,7 +263,7 @@ class MainWindow(QMainWindow, WindowMixin):
             # Loading filenames in vid file manager
             self.file_manager.load(fp)
             # Reading in configs
-            configs = read_configs(self.file_manager.configs_fp, ExperimentConfigs)
+            configs = ExperimentConfigs.read_json(self.file_manager.configs_fp)
             # Loading data into vid, bouts, and keypoints models
             self.vid_model.load(self.file_manager.vid_fp)
             self.bouts_model.load(self.file_manager.behavs_df_fp, configs)
@@ -279,6 +286,7 @@ class MainWindow(QMainWindow, WindowMixin):
             )
 
     def select_bout(self):
+        """__summary__"""
         # Getting selected bout QIndex (if there exists one)
         if len(self.ui.bouts_view.selectedIndexes()) > 0:
             index = self.ui.bouts_view.selectedIndexes()[0]
@@ -294,6 +302,7 @@ class MainWindow(QMainWindow, WindowMixin):
             self.set_frame(bout.start)
 
     def update_frame(self):
+        """__summary__"""
         # If bout_focus_btn is checked AND video is past the current bout's end,
         # then pause (i.e., don't update the frame)
         if self.ui.bout_focus_btn.isChecked():
@@ -310,6 +319,7 @@ class MainWindow(QMainWindow, WindowMixin):
             self.curr_i += 1
 
     def update_frame_vid(self):
+        """__summary__"""
         # Reading in next frame
         ret, frame = self.vid_model.read()
         if ret:
@@ -322,6 +332,7 @@ class MainWindow(QMainWindow, WindowMixin):
         return ret
 
     def update_frame_plot(self):
+        """__summary__"""
         self.ui.graph_viewer.plot_update(
             self.curr_i / self.vid_model.fps,
             xmin=(self.curr_i - self.window_size) / self.vid_model.fps,
@@ -329,6 +340,7 @@ class MainWindow(QMainWindow, WindowMixin):
         )
 
     def set_frame(self, frame_num):
+        """__summary__"""
         # Setting curr_frame value
         self.curr_i = np.clip(frame_num, 0, self.vid_model.nframes - 1)
         # Setting video to new frame
@@ -337,13 +349,16 @@ class MainWindow(QMainWindow, WindowMixin):
         self.update_frame()
 
     def toggle_actual_rbtns(self, r: bool, value: int):
+        """__summary__"""
         if r:
             self.bout_inspect_model.actual = value
 
     def save(self):
+        """__summary__"""
         self.save_frames(self.file_manager.behavs_df_fp)
 
     def save_frames(self, fp=None):
+        """__summary__"""
         if not fp:
             fp = QFileDialog.getSaveFileName(
                 self,
@@ -353,14 +368,15 @@ class MainWindow(QMainWindow, WindowMixin):
             )[0]
         if fp:
             # bouts to behavs_df
-            behavs_df = behavs_df_utils.bouts_2_frames(self.bouts_model.bouts)
+            behavs_df = BehaviourMixin.bouts_2_frames(self.bouts_model.bouts)
             # Writing to feather file
-            write_feather(behavs_df, fp)
+            DFIOMixin.write_feather(behavs_df, fp)
             self.ui.statusbar.showMessage(
                 f"Saved scored behaviour frames to {fp}", timeout=STATUS_MSG_TIMEOUT
             )
 
     def save_bouts(self, fp=None):
+        """__summary__"""
         if not fp:
             fp = QFileDialog.getSaveFileName(
                 self,
@@ -370,12 +386,13 @@ class MainWindow(QMainWindow, WindowMixin):
             )[0]
         if fp:
             # Writing to json file
-            write_configs(self.bouts_model.bouts, fp)
+            self.bouts_model.bouts.write_json(fp)
             self.ui.statusbar.showMessage(
                 f"Saved scored behaviour bouts to {fp}", timeout=STATUS_MSG_TIMEOUT
             )
 
     def export_vid(self, fp=None):
+        """__summary__"""
         if not fp:
             fp = QFileDialog.getSaveFileName(
                 self,
@@ -428,7 +445,7 @@ class MainWindow(QMainWindow, WindowMixin):
         # Define the codec and create VideoWriter object
         app = QApplication()
 
-        configs = read_configs(file_manager.configs_fp, ExperimentConfigs)
+        configs = ExperimentConfigs.read_json(file_manager.configs_fp)
 
         vid_model = VidModel()
         vid_model.load(file_manager.vid_fp)
@@ -484,4 +501,26 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
 
+    sys.exit(app.exec())
+
+    app = QApplication(sys.argv)
+
+    window = MainWindow()
+    window.show()
+
+    sys.exit(app.exec())
+
+    app = QApplication(sys.argv)
+
+    window = MainWindow()
+    window.show()
+
+    sys.exit(app.exec())
+    sys.exit(app.exec())
+    app = QApplication(sys.argv)
+
+    window = MainWindow()
+    window.show()
+
+    sys.exit(app.exec())
     sys.exit(app.exec())

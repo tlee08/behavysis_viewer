@@ -1,16 +1,7 @@
-from PySide6.QtCore import (
-    QAbstractListModel,
-    Qt,
-)
+from ba_core.data_models.bouts import Bout
+from ba_viewer.utils.constants import CHECKSTATE2VALUE, VALUE2CHECKSTATE, VALUE2COLOR
+from PySide6.QtCore import QAbstractListModel, Qt
 from PySide6.QtGui import QColor
-
-from ba_viewer.utils.constants import (
-    CHECKSTATE2VALUE,
-    VALUE2CHECKSTATE,
-    VALUE2COLOR,
-)
-
-from ba_viewer.pydantic_models.bouts import Bout
 
 
 class BoutInspectListModel(QAbstractListModel):

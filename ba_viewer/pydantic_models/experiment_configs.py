@@ -2,62 +2,26 @@
 _summary_
 """
 
-from typing import Optional, Union
-
-from pydantic import (
-    BaseModel,
-    # FilePath,
-    model_validator,
-    field_validator,
-    ValidationError,
-)
+import os
+from typing import Optional
 
 import matplotlib.pyplot as plt
-
-from ba_viewer.utils.constants import DLC_COLUMN_NAMES
-
-
-def _validate_attrs_as_unit_processes(model, field_names):
-    for k in field_names:
-        try:
-            v = getattr(model, k)
-            setattr(model, k, ConfigsUnitProcess.model_validate(v))
-        except Exception as e:
-            raise ValidationError(f"'{k}' is not a dict\n:" + f"{k}: {v}") from e
-    return model
-
-
-def _check_attrs_in_set(v, valid_options):
-    if v not in valid_options:
-        raise ValidationError(f"Option must be one of: {', '.join(valid_options)}")
-    return v
+from ba_core.data_models.pydantic_base_model import PydanticBaseModel
+from ba_core.data_models.vid_metadata import VidMetadata
+from ba_core.utils.constants import DLC_COLUMN_NAMES
+from pydantic import BaseModel, ConfigDict, FilePath, field_validator
 
 
 class ConfigsUnitProcess(BaseModel):
     """_summary_"""
 
-    class Config:
-        """_summary_"""
-
-        extra = "allow"
-
-
-class ConfigsVidMetadata(BaseModel):
-    """_summary_"""
-
-    fps: Optional[Union[int, float]] = None
-    width_px: Optional[int] = None
-    height_px: Optional[int] = None
-    total_frames: Optional[int] = None
-
-    class Config:
-        """_summary_"""
-
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
 
 class ConfigsFormatVid(BaseModel):
     """_summary_"""
+
+    model_config = ConfigDict(extra="forbid")
 
     width_px: Optional[int] = None
     height_px: Optional[int] = None
@@ -69,41 +33,35 @@ class ConfigsFormatVid(BaseModel):
 class ConfigsRunDLC(BaseModel):
     """_summary_"""
 
-    dlc_config_path: str = "."  # FilePath
+    model_config = ConfigDict(extra="forbid")
+
+    dlc_config_path: FilePath = os.path.join(".")  # type: ignore
 
 
 class ConfigsCalculateParams(BaseModel):
     """_summary_"""
 
-    class Config:
-        """_summary_"""
+    model_config = ConfigDict(extra="forbid")
 
-        extra = "allow"
-
-    @model_validator(mode="after")
-    @classmethod
-    def check_attrs_are_types(cls, model):
-        """_summary_"""
-        return _validate_attrs_as_unit_processes(model, model.model_extra.keys())
+    start_frame: ConfigsUnitProcess = ConfigsUnitProcess()
+    stop_frame: ConfigsUnitProcess = ConfigsUnitProcess()
+    px_per_mm: ConfigsUnitProcess = ConfigsUnitProcess()
 
 
 class ConfigsPreprocess(BaseModel):
     """_summary_"""
 
-    class Config:
-        """_summary_"""
+    model_config = ConfigDict(extra="forbid")
 
-        extra = "allow"
-
-    @model_validator(mode="after")
-    @classmethod
-    def check_attrs_are_types(cls, model):
-        """_summary_"""
-        return _validate_attrs_as_unit_processes(model, model.model_extra.keys())
+    interpolate_points: ConfigsUnitProcess = ConfigsUnitProcess()
+    bodycentre: ConfigsUnitProcess = ConfigsUnitProcess()
+    refine_identities: ConfigsUnitProcess = ConfigsUnitProcess()
 
 
 class ConfigsExtractFeatures(BaseModel):
     """_summary_"""
+
+    model_config = ConfigDict(extra="forbid")
 
     individuals: list[str] = ["mouse1marked", "mouse2unmarked"]
     bodyparts: list[str] = [
@@ -121,31 +79,32 @@ class ConfigsExtractFeatures(BaseModel):
 class ConfigsClassifyBehaviours(BaseModel):
     """_summary_"""
 
-    models: list[str] = ["."]  # FilePath
+    model_config = ConfigDict(extra="forbid")
+
+    models: list[FilePath] = []
     min_window_frames: int = 1
-    user_behavs: list[str] = ["example"]
+    user_behavs: list[str] = []
 
 
 class ConfigsAnalyse(BaseModel):
     """_summary_"""
 
+    model_config = ConfigDict(extra="forbid")
+
     bins_sec: list[int] = [30, 60, 120]
     custom_bins_sec: list[int] = [60, 120, 300, 600]
 
-    class Config:
-        """_summary_"""
-
-        extra = "allow"
-
-    @model_validator(mode="after")
-    @classmethod
-    def check_attrs_are_types(cls, model):
-        """_summary_"""
-        return _validate_attrs_as_unit_processes(model, list(model.model_extra.keys()))
+    thigmotaxis: ConfigsUnitProcess = ConfigsUnitProcess()
+    center_crossing: ConfigsUnitProcess = ConfigsUnitProcess()
+    speed: ConfigsUnitProcess = ConfigsUnitProcess()
+    social_distance: ConfigsUnitProcess = ConfigsUnitProcess()
+    freezing: ConfigsUnitProcess = ConfigsUnitProcess()
 
 
 class ConfigsEvalKeypointsPlot(BaseModel):
     """_summary_"""
+
+    model_config = ConfigDict(extra="forbid")
 
     bodyparts: list[str] = [
         "LeftEar",
@@ -162,6 +121,8 @@ class ConfigsEvalKeypointsPlot(BaseModel):
 class ConfigsEvalVid(BaseModel):
     """_summary_"""
 
+    model_config = ConfigDict(extra="forbid")
+
     funcs: list[str] = ["keypoints"]
     pcutoff: float = 0.8
     colour_level: str = "individuals"
@@ -170,19 +131,21 @@ class ConfigsEvalVid(BaseModel):
 
     @field_validator("cmap")
     @classmethod
-    def check_cmap(cls, v):
+    def validate_cmap(cls, v):
         """_summary_"""
-        return _check_attrs_in_set(v, plt.colormaps())
+        return PydanticBaseModel.validate_attr_closed_set(v, plt.colormaps())
 
     @field_validator("colour_level")
     @classmethod
-    def check_colour_level(cls, v):
+    def validate_colour_level(cls, v):
         """_summary_"""
-        return _check_attrs_in_set(v, DLC_COLUMN_NAMES)
+        return PydanticBaseModel.validate_attr_closed_set(v, DLC_COLUMN_NAMES)
 
 
 class ConfigsEvaluate(BaseModel):
     """_summary_"""
+
+    model_config = ConfigDict(extra="forbid")
 
     keypoints_plot: ConfigsEvalKeypointsPlot = ConfigsEvalKeypointsPlot()
     eval_vid: ConfigsEvalVid = ConfigsEvalVid()
@@ -190,6 +153,8 @@ class ConfigsEvaluate(BaseModel):
 
 class ConfigsUser(BaseModel):
     """_summary_"""
+
+    model_config = ConfigDict(extra="forbid")
 
     format_vid: ConfigsFormatVid = ConfigsFormatVid()
     run_dlc: ConfigsRunDLC = ConfigsRunDLC()
@@ -204,15 +169,19 @@ class ConfigsUser(BaseModel):
 class ConfigsAuto(BaseModel):
     """_summary_"""
 
-    raw_vid: ConfigsVidMetadata = ConfigsVidMetadata()
-    formatted_vid: ConfigsVidMetadata = ConfigsVidMetadata()
+    model_config = ConfigDict(extra="forbid")
+
+    raw_vid: VidMetadata = VidMetadata()
+    formatted_vid: VidMetadata = VidMetadata()
     px_per_mm: Optional[float] = None
     start_frame: Optional[int] = None
     stop_frame: Optional[int] = None
 
 
-class ExperimentConfigs(BaseModel):
+class ExperimentConfigs(PydanticBaseModel, BaseModel):
     """_summary_"""
+
+    model_config = ConfigDict(extra="forbid")
 
     user: ConfigsUser = ConfigsUser()
     auto: ConfigsAuto = ConfigsAuto()

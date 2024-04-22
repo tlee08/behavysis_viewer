@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-
-from ba_viewer.utils import behavs_df_utils
+from ba_core.mixins.behaviour_mixin import BehaviourMixin
 
 
 @pytest.fixture(scope="function", autouse=False)
@@ -18,13 +17,13 @@ def rand_img():
 
 
 def test_frames_2_bouts_2_frames(behavs_df):
-    bouts = behavs_df_utils.frames_to_bouts(behavs_df)
+    bouts = BehaviourMixin.frames_2_bouts(behavs_df)
     assert bouts.start == behavs_df.index[0]
     assert bouts.stop == behavs_df.index[-1] + 1
     assert bouts.bouts is not None
 
-    behavs_df2 = behavs_df_utils.bouts_2_frames(bouts)
+    behavs_df2 = BehaviourMixin.bouts_2_frames(bouts)
     assert behavs_df2.equals(behavs_df)
 
-    bouts2 = behavs_df_utils.frames_to_bouts(behavs_df2)
+    bouts2 = BehaviourMixin.frames_2_bouts(behavs_df2)
     assert bouts == bouts2

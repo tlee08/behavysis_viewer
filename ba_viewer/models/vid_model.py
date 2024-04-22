@@ -1,10 +1,5 @@
 import cv2
 import numpy as np
-import pandas as pd
-from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt
-from PySide6.QtGui import QColor
-
-from ba_viewer.utils.constants import BEHAV_ACTUAL_COL, BEHAV_COLUMN_NAMES, VALUE2COLOR
 
 
 class VidModel:

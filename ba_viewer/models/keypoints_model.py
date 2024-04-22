@@ -1,20 +1,11 @@
-from typing import Sequence
-
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt
-from PySide6.QtGui import QColor
-
-from ba_viewer.utils.constants import (
-    BEHAV_ACTUAL_COL,
-    BEHAV_COLUMN_NAMES,
-    PROCESS_COL,
-    VALUE2COLOR,
-)
+from ba_core.mixins.df_io_mixin import DFIOMixin
+from ba_core.mixins.keypoints_mixin import KeypointsMixin
+from ba_core.utils.constants import PROCESS_COL
 from ba_viewer.pydantic_models.experiment_configs import ExperimentConfigs
-from ba_viewer.utils.funcs import clean_dlc_headings, read_feather
 
 
 class KeypointsModel:
@@ -39,7 +30,7 @@ class KeypointsModel:
         self.cmap = None
 
     def load(self, fp: str, configs: ExperimentConfigs):
-        self.raw_dlc_df = read_feather(fp)
+        self.raw_dlc_df = DFIOMixin.read_feather(fp)
         self.set_configs(configs)
         self.dlc_2_annot()
 
@@ -52,7 +43,7 @@ class KeypointsModel:
 
     def dlc_2_annot(self):
         dlc_df = self.raw_dlc_df.copy()
-        dlc_df = clean_dlc_headings(dlc_df)
+        dlc_df = KeypointsMixin.clean_headings(dlc_df)
         # Modifying dlc_df and making list of how to select dlc_df components to optimise processing
         # Filtering out PROCESS_COL columns
         if PROCESS_COL in dlc_df.columns.unique("individuals"):

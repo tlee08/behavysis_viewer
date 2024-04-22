@@ -2,12 +2,9 @@ import cv2
 import numpy as np
 import pandas as pd
 import pytest
-from PySide6.QtWidgets import QApplication
-
-from ba_viewer.utils import behavs_df_utils
+from ba_core.mixins.behaviour_mixin import BehaviourMixin
+from ba_core.utils.constants import BEHAV_COLUMN_NAMES
 from ba_viewer.widgets.graph_view import GraphView
-
-from ba_viewer.utils.constants import BEHAV_COLUMN_NAMES
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -33,9 +30,9 @@ def rand_bouts():
         frames_df.columns, names=BEHAV_COLUMN_NAMES
     )
     # Adding in "actual" column  and "my_user_behav" column
-    frames_df = behavs_df_utils.frames_add_behaviour(frames_df, ["my_user_behav"])
+    frames_df = BehaviourMixin.frames_add_behaviour(frames_df, ["my_user_behav"])
     # frames_df to bouts
-    bouts = behavs_df_utils.frames_to_bouts(frames_df)
+    bouts = BehaviourMixin.frames_to_bouts(frames_df)
 
     yield bouts
 
