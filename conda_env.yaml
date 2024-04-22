@@ -7,24 +7,7 @@ channels:
   - defaults
 dependencies:
   - python
-  - setuptools
   - pip
   - ipykernel
-  - pydantic
-  - numpy
-  - pandas
-  - scipy
-  - pyarrow
-  - opencv
-  - pyqtgraph
-  - matplotlib
-  - pyside6
-  - natsort
-  - tqdm
-  # dev packages
-  - black
-  - pytest
-  - mkdocs-material
-  - mkdocstrings-python
-  - pip:
-      - -e "../"
+  - nb_conda
+  - ffmpeg

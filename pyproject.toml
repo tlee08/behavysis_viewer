@@ -8,8 +8,9 @@ readme = "README.md"
 packages = [{ include = "ba_viewer" }]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<3.13"
 PySide6 = "^6.7.0"
+pyqtgraph = "^0.13.6"
 # ba_core = "^0.1.0"
 ba_core = { path = "../ba_core", develop = true }
 
