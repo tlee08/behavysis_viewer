@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from ba_core.mixins.behaviour_mixin import BehaviourMixin
+from behavysis_core.mixins.behaviour_mixin import BehaviourMixin
 
 
 @pytest.fixture(scope="function", autouse=False)

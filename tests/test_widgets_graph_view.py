@@ -2,9 +2,9 @@ import cv2
 import numpy as np
 import pandas as pd
 import pytest
-from ba_core.mixins.behaviour_mixin import BehaviourMixin
-from ba_core.utils.constants import BEHAV_COLUMN_NAMES
-from ba_viewer.widgets.graph_view import GraphView
+from behavysis_core.mixins.behaviour_mixin import BehaviourMixin
+from behavysis_core.utils.constants import BEHAV_COLUMN_NAMES
+from behavysis_viewer.widgets.graph_view import GraphView
 
 
 @pytest.fixture(scope="module", autouse=True)

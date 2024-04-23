@@ -3,8 +3,8 @@ import numpy as np
 import pytest
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
 
-from ba_viewer.widgets.cv_view import CvView
-from ba_viewer.utils.cv2_qt_mixin import Cv2QtMixin
+from behavysis_viewer.widgets.cv_view import CvView
+from behavysis_viewer.utils.cv2_qt_mixin import Cv2QtMixin
 
 
 @pytest.fixture(scope="module", autouse=True)
