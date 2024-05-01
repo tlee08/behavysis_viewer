@@ -2,7 +2,30 @@
 
 Semi-automated scoring animal behaviour. Behaviour is first predicted by a classifier and then the user verifies &amp; further scores this behaviour.
 
+## Installation
+
+### Dev installation
+
+```bash
+conda env create -f conda_env.yaml
+conda activate behavysis_viewer_env
+pip install poetry
+poetry install
 ```
+
+### User installation
+
+```bash
+conda env create -f conda_env.yaml
+```
+
+## Running
+
+```bash
+behavysis_viewer
+```
+
+```bash
 pyside6-uic behavysis_viewer/ui/main_ui.ui -o behavysis_viewer/ui/main_ui.py
 
 pyside6-uic behavysis_viewer/ui/settings_ui.ui -o behavysis_viewer/ui/settings_ui.py
@@ -15,3 +38,5 @@ Mathis, A., Mamidanna, P., Cury, K. M., Abe, T., Murthy, V. N., Mathis, M. W., &
 Nath, T., Mathis, A., Chen, A. C., Patel, A., Bethge, M., & Mathis, M. W. (2019, June 21). Using DeepLabCut for 3D markerless pose estimation across species and behaviors. Nature Protocols. Springer Science and Business Media LLC. http://doi.org/10.1038/s41596-019-0176-0
 
 Lauer, J., Zhou, M., Ye, S., Menegas, W., Schneider, S., Nath, T., … Mathis, A. (2022, April). Multi-animal pose estimation, identification and tracking with DeepLabCut. Nature Methods. Springer Science and Business Media LLC. http://doi.org/10.1038/s41592-022-01443-0
+
+Nilsson, S., Goodwin, N., Choong, J. J., Hwang, S., Wright, H., Norville, Z., Tong, X., Lin, D., Bentzley, B., Eshel, N., McLaughlin, R., & Golden, S. Simple Behavioral Analysis (SimBA): an open source toolkit for computer classification of complex social behaviors in experimental animals [Computer software]. https://github.com/sgoldenlab/simba

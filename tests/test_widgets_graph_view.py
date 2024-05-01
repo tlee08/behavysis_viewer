@@ -2,8 +2,9 @@ import cv2
 import numpy as np
 import pandas as pd
 import pytest
+from behavysis_core.constants import BEHAV_COLUMN_NAMES
 from behavysis_core.mixins.behaviour_mixin import BehaviourMixin
-from behavysis_core.utils.constants import BEHAV_COLUMN_NAMES
+
 from behavysis_viewer.widgets.graph_view import GraphView
 
 

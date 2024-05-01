@@ -5,11 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from behavysis_core.data_models.bouts import Bouts
-from behavysis_viewer.pydantic_models.experiment_configs import ExperimentConfigs
-from behavysis_viewer.utils.cv2_qt_mixin import Cv2QtMixin
+from behavysis_core.data_models.experiment_configs import ExperimentConfigs
 from pyqtgraph import BarGraphItem, InfiniteLine, PlotWidget, mkPen
 from pyqtgraph.exporters import ImageExporter
 from PySide6.QtWidgets import QApplication
+
+from behavysis_viewer.utils.cv2_qt_mixin import Cv2QtMixin
 
 
 class GraphView(PlotWidget):
@@ -54,16 +55,16 @@ class GraphView(PlotWidget):
         # Plotting data
         # TODO: fix this up. Un-pythonic for loop
         # TODO: change colour of bar depending on bout "actual" value
-        for i in range(len(start_ls)):
-            bar = BarGraphItem(
+        for i, _ in enumerate(start_ls):
+            bar_ = BarGraphItem(
                 x0=start_ls[i],
                 x1=stop_ls[i],
                 y=behavs_ls_i[i],
                 height=0.5,
-                pen=mkPen(color="r"),
+                # pen=mkPen(color="r"),
             )
-            self.bars.append(bar)
-            self.addItem(bar)
+            self.bars.append(bar_)
+            self.addItem(bar_)
         # self.plot(x, y)
         # Setting current time marker line
         self.time_marker_line.setPos(0)

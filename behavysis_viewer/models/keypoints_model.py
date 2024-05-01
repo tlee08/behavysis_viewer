@@ -2,10 +2,10 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from behavysis_core.constants import PROCESS_COL
+from behavysis_core.data_models.experiment_configs import ExperimentConfigs
 from behavysis_core.mixins.df_io_mixin import DFIOMixin
 from behavysis_core.mixins.keypoints_mixin import KeypointsMixin
-from behavysis_core.utils.constants import PROCESS_COL
-from behavysis_viewer.pydantic_models.experiment_configs import ExperimentConfigs
 
 
 class KeypointsModel:

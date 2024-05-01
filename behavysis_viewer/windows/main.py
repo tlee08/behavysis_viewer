@@ -5,20 +5,9 @@ from multiprocessing.sharedctypes import Synchronized
 
 import cv2
 import numpy as np
+from behavysis_core.data_models.experiment_configs import ExperimentConfigs
 from behavysis_core.mixins.behaviour_mixin import BehaviourMixin
 from behavysis_core.mixins.df_io_mixin import DFIOMixin
-from behavysis_viewer.models.bout_inspect_list_model import BoutInspectListModel
-from behavysis_viewer.models.bouts_list_model import BoutsListModel
-from behavysis_viewer.models.exp_file_manager import ExpFileManager
-from behavysis_viewer.models.keypoints_model import KeypointsModel
-from behavysis_viewer.models.vid_model import VidModel
-from behavysis_viewer.pydantic_models.experiment_configs import ExperimentConfigs
-from behavysis_viewer.ui.main_ui import Ui_MainWindow
-from behavysis_viewer.utils.constants import STATUS_MSG_TIMEOUT
-from behavysis_viewer.widgets.graph_view import GraphView
-from behavysis_viewer.windows.help import HelpWindow
-from behavysis_viewer.windows.settings import SettingsWindow
-from behavysis_viewer.windows.window_mixin import WindowMixin
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -31,6 +20,18 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 from tqdm import trange
+
+from behavysis_viewer.models.bout_inspect_list_model import BoutInspectListModel
+from behavysis_viewer.models.bouts_list_model import BoutsListModel
+from behavysis_viewer.models.exp_file_manager import ExpFileManager
+from behavysis_viewer.models.keypoints_model import KeypointsModel
+from behavysis_viewer.models.vid_model import VidModel
+from behavysis_viewer.ui.main_ui import Ui_MainWindow
+from behavysis_viewer.utils.constants import STATUS_MSG_TIMEOUT
+from behavysis_viewer.widgets.graph_view import GraphView
+from behavysis_viewer.windows.help import HelpWindow
+from behavysis_viewer.windows.settings import SettingsWindow
+from behavysis_viewer.windows.window_mixin import WindowMixin
 
 
 class MainWindow(QMainWindow, WindowMixin):
@@ -284,6 +285,7 @@ class MainWindow(QMainWindow, WindowMixin):
             self.ui.statusbar.showMessage(
                 f"Failed to open {fp}: {e}", timeout=STATUS_MSG_TIMEOUT
             )
+            print(e)
 
     def select_bout(self):
         """__summary__"""
