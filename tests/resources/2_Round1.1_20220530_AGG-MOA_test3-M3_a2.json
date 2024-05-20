@@ -100,10 +100,6 @@
       },
       "bins_sec": [60, 120, 300, 600],
       "custom_bins_sec": [60, 120, 300, 600]
-    },
-    "analysis_eval": {
-      "vis_sec": 2,
-      "cmap": "Pastel1"
     }
   },
   "auto": {
