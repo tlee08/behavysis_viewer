@@ -1,4 +1,5 @@
 class WindowMixin:
+
     @staticmethod
     def toggle_window(widget):
         if widget.isVisible():

@@ -1,3 +1,7 @@
+"""
+_summary_
+"""
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,6 +13,9 @@ from behavysis_core.mixins.keypoints_mixin import KeypointsMixin
 
 
 class KeypointsModel:
+    """
+    _summary_
+    """
 
     raw_dlc_df: pd.DataFrame
     annot_dlc_df: pd.DataFrame
@@ -30,11 +37,30 @@ class KeypointsModel:
         self.cmap = None
 
     def load(self, fp: str, configs: ExperimentConfigs):
+        """
+        load in the raw DLC dataframe and set the configurations, from
+        the given dlc_fp and configs.
+
+        Parameters
+        ----------
+        fp : str
+            _description_
+        configs : ExperimentConfigs
+            _description_
+        """
         self.raw_dlc_df = DFIOMixin.read_feather(fp)
         self.set_configs(configs)
         self.dlc_2_annot()
 
     def set_configs(self, configs: ExperimentConfigs):
+        """
+        Sets the configurations for the keypoints model.
+
+        Parameters
+        ----------
+        configs : ExperimentConfigs
+            The experiment configurations.
+        """
         configs_filt = configs.user.evaluate.eval_vid
         self.colour_level = configs_filt.colour_level
         self.pcutoff = configs_filt.pcutoff
@@ -42,6 +68,19 @@ class KeypointsModel:
         self.cmap = configs_filt.cmap
 
     def dlc_2_annot(self):
+        """
+        Converts the raw DLC dataframe to a row and column format that is ready for cv2
+        video annotation.
+
+        This method performs several operations on the raw DLC dataframe to prepare it for
+        annotation. It cleans the headings, filters out specific columns, rounds and casts
+        the values to the correct dtypes, changes the columns MultiIndex to a single-level
+        index, creates a corresponding colours list for each bodypart instance,
+        and saves the modified data to instance variables.
+
+        Returns:
+            None
+        """
         dlc_df = self.raw_dlc_df.copy()
         dlc_df = KeypointsMixin.clean_headings(dlc_df)
         # Modifying dlc_df and making list of how to select dlc_df components to optimise processing
@@ -60,10 +99,10 @@ class KeypointsModel:
         dlc_df.columns = [
             f"{indiv}_{bpt}_{coord}" for indiv, bpt, coord in dlc_df.columns
         ]
-        # Making the corresponding colours list for each bodypart instance (colours depend on indiv/bpt)
+        # Making the corresponding colours list for each bodypart instance
         colours_i, _ = pd.factorize(indivs_bpts_ls.get_level_values(self.colour_level))
-        colours_ls = plt.get_cmap(self.cmap)(colours_i / colours_i.max()) * 255
-        colours_ls = colours_ls[:, [2, 1, 0, 3]]
+        colours_ls = plt.get_cmap(self.cmap)(colours_i / colours_i.max())
+        colours_ls = colours_ls[:, [2, 1, 0, 3]] * 255
         # Saving data to instance
         self.annot_dlc_df = dlc_df
         self.indivs_bpts_ls = indivs_bpts_ls

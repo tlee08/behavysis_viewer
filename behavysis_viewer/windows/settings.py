@@ -51,7 +51,9 @@ class SettingsWindow(QTabWidget, WindowMixin):
 
     def save(self):
         self.set_vid_size()
+        self.set_fps()
         self.set_window_size()
+        self.set_focus_size()
 
     def set_vid_size(self):
         width_str = self.ui.vid_width_le.text()
@@ -61,11 +63,28 @@ class SettingsWindow(QTabWidget, WindowMixin):
             # Setting new vid_viewer and plot_viewer dimensions
             self.main.resize_viewer(width, height)
 
+    def set_fps(self):
+        vid_speed_str = self.ui.vid_speed_le.text()
+        try:
+            self.main.vid_speed = float(vid_speed_str)
+        except ValueError:
+            pass
+
     def set_window_size(self):
-        window_size_str = self.ui.window_size_le.text()
-        if window_size_str.isnumeric():
-            self.main.window_size = int(int(window_size_str) * self.main.vid_model.fps)
-            self.main.update_frame_plot()
+        window_size_sec_str = self.ui.window_size_le.text()
+        try:
+            secs = float(window_size_sec_str)
+            self.main.window_size_frames = int(secs * self.main.vid_model.fps)
+        except ValueError:
+            pass
+
+    def set_focus_size(self):
+        focus_size_sec_str = self.ui.focus_size_le.text()
+        try:
+            secs = float(focus_size_sec_str)
+            self.main.focus_size_frames = int(secs * self.main.vid_model.fps)
+        except ValueError:
+            pass
 
 
 if __name__ == "__main__":

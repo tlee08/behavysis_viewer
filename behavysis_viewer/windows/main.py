@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QVBoxLayout,
+    QWidget,
 )
 from tqdm import trange
 
@@ -45,7 +46,9 @@ class MainWindow(QMainWindow, WindowMixin):
     vid_model: VidModel
     keypoints_model: KeypointsModel
 
-    window_size: int
+    _window_size_frames: int
+    _vid_speed: int
+    _focus_size_frames: int
     curr_i: int
 
     bouts_model: BoutsListModel
@@ -92,6 +95,49 @@ class MainWindow(QMainWindow, WindowMixin):
         # Initialising timer to play video
         self._init_timer_vid()
 
+    ####################################################################
+    # PROPERTIES
+    ####################################################################
+
+    @property
+    def window_size_frames(self) -> int:
+        """__summary__"""
+        return self._window_size_frames
+
+    @window_size_frames.setter
+    def window_size_frames(self, window_size_frames: int) -> None:
+        """__summary__"""
+        self._window_size_frames = window_size_frames
+        # Updating the frame plot with new viewable window size
+        self.update_frame_plot()
+
+    @property
+    def vid_speed(self) -> int:
+        """__summary__"""
+        return self._vid_speed
+
+    @vid_speed.setter
+    def vid_speed(self, vid_speed: int) -> None:
+        """__summary__"""
+        self._vid_speed = vid_speed
+        # Updating the timer with the new fps speed
+        viewer_fps = self.vid_speed * self.vid_model.fps
+        self.timer.start(1000 // viewer_fps)
+
+    @property
+    def focus_size_frames(self) -> int:
+        """__summary__"""
+        return self._focus_size_frames
+
+    @focus_size_frames.setter
+    def focus_size_frames(self, focus_size_frames: int) -> None:
+        """__summary__"""
+        self._focus_size_frames = focus_size_frames
+
+    ####################################################################
+    # INITIALIZATION METHODS
+    ####################################################################
+
     def _init_models(self):
         """__summary__"""
         # Init file manager
@@ -102,8 +148,10 @@ class MainWindow(QMainWindow, WindowMixin):
         # Init bouts and bout_inspect list models
         self.bouts_model = BoutsListModel()
         self.bout_inspect_model = BoutInspectListModel()
-        # Init primitive variables
-        self.window_size = 25
+        # Init primitive attributes
+        self._window_size_frames = 25
+        self._vid_speed = 1
+        self._focus_size_frames = 5
         self.curr_i = 0
 
     def _init_model_views(self):
@@ -167,7 +215,8 @@ class MainWindow(QMainWindow, WindowMixin):
         )
         # Handle bout-related video buttons
         self.ui.bout_replay_btn.clicked.connect(
-            lambda: self.set_frame(self.bout_inspect_model.start)
+            self.select_bout
+            # lambda: self.set_frame(self.bout_inspect_model.start)
         )
 
     def _init_conns_io(self):
@@ -226,6 +275,10 @@ class MainWindow(QMainWindow, WindowMixin):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
 
+    ####################################################################
+    # SLOTS
+    ####################################################################
+
     def resize_viewer(self, width, height):
         """__summary__"""
         self.ui.vid_viewer.setFixedSize(width, height)
@@ -263,20 +316,25 @@ class MainWindow(QMainWindow, WindowMixin):
         try:
             # Loading filenames in vid file manager
             self.file_manager.load(fp)
+
             # Reading in configs
             configs = ExperimentConfigs.read_json(self.file_manager.configs_fp)
             # Loading data into vid, bouts, and keypoints models
             self.vid_model.load(self.file_manager.vid_fp)
             self.bouts_model.load(self.file_manager.behavs_df_fp, configs)
             self.keypoints_model.load(self.file_manager.dlc_df_fp, configs)
-            # Setting window size
+
+            # Setting primitive attributes
+            # self.window_size_frames = 25
+            self.vid_speed = 1
+            # self.focus_size_frames = 5
             self.curr_i = 0
+
             # Preparing slider
             self.ui.slider.setMaximum(self.vid_model.nframes)
-            # Preparing QTimer to play video (at given fps)
-            self.timer.start(1000 // self.vid_model.fps)
             # Updating the graph_viewer with bouts data
             self.ui.graph_viewer.plot_bouts_init(self.bouts_model.bouts, configs)
+
             # Writing msg to statusbar
             self.ui.statusbar.showMessage(
                 f"Opened video: {fp}", timeout=STATUS_MSG_TIMEOUT
@@ -301,14 +359,14 @@ class MainWindow(QMainWindow, WindowMixin):
             # Linking is_behav rbtns
             self.rbtns[bout.actual].toggle()
             # Jumping to bout start
-            self.set_frame(bout.start)
+            self.set_frame(bout.start - self.focus_size_frames)
 
     def update_frame(self):
         """__summary__"""
         # If bout_focus_btn is checked AND video is past the current bout's end,
         # then pause (i.e., don't update the frame)
         if self.ui.bout_focus_btn.isChecked():
-            if self.curr_i > self.bout_inspect_model.stop:
+            if self.curr_i > self.bout_inspect_model.stop + self.focus_size_frames:
                 return
         # Update vid frame
         ret = self.update_frame_vid()
@@ -337,8 +395,8 @@ class MainWindow(QMainWindow, WindowMixin):
         """__summary__"""
         self.ui.graph_viewer.plot_update(
             self.curr_i / self.vid_model.fps,
-            xmin=(self.curr_i - self.window_size) / self.vid_model.fps,
-            xmax=(self.curr_i + self.window_size) / self.vid_model.fps,
+            xmin=(self.curr_i - self.window_size_frames) / self.vid_model.fps,
+            xmax=(self.curr_i + self.window_size_frames) / self.vid_model.fps,
         )
 
     def set_frame(self, frame_num):
@@ -404,7 +462,6 @@ class MainWindow(QMainWindow, WindowMixin):
             )[0]
         if fp:
             # Annotating each frame using the created functions
-            i = Value("I", 0, lock=True)
             p = Process(
                 target=self.export_vid_worker,
                 args=(
@@ -412,21 +469,11 @@ class MainWindow(QMainWindow, WindowMixin):
                     fp,
                     self.ui.vid_viewer.width(),
                     self.ui.vid_viewer.height(),
-                    self.window_size,
-                    i,
+                    self.window_size_frames,
                 ),
             )
 
             p.start()
-
-            # while i.value < self.vid_model.nframes:
-            #     time.sleep(0.5)
-            #     with i.get_lock():
-            #         self.ui.statusbar.showMessage(
-            #             f"Exporting video: {i}/{self.vid_model.nframes}",
-            #             timeout=STATUS_MSG_TIMEOUT,
-            #         )
-
             p.join()
 
             # Displaying message
@@ -441,58 +488,59 @@ class MainWindow(QMainWindow, WindowMixin):
         w: int,
         h: int,
         window_size: int,
-        i: Synchronized,
     ):
         """Annotating video with keypoints and scored behaviours loop."""
-        # Define the codec and create VideoWriter object
+        # Need to make QApplication for graph_viewer
         app = QApplication()
 
+        # Get configs
         configs = ExperimentConfigs.read_json(file_manager.configs_fp)
-
+        # Make video model
         vid_model = VidModel()
         vid_model.load(file_manager.vid_fp)
-
+        # Make keypoints model
+        keypoints_model = KeypointsModel()
+        keypoints_model.load(file_manager.dlc_df_fp, configs)
+        # Make bouts model
         bouts_model = BoutsListModel()
         bouts_model.load(file_manager.behavs_df_fp, configs)
-
+        # Make graph viewer, plot all data and set widget size
         graph_viewer = GraphView()
         graph_viewer.plot_bouts_init(bouts_model.bouts, configs)
         graph_viewer.setFixedSize(w, h)
+        # Must run to enable widget size
+        graph_viewer.show()
+        graph_viewer.hide()
 
-        keypoints_model = KeypointsModel()
-        keypoints_model.load(file_manager.dlc_df_fp, configs)
-
+        # Create VideoWriter object
         out_cap = cv2.VideoWriter(
             out_fp,
             cv2.VideoWriter_fourcc(*"mp4v"),
             vid_model.fps,
             (w, h * 2),
         )
-
         # Annotating each frame using the created functions
-        for _ in trange(vid_model.nframes):
+        for i in trange(vid_model.nframes):
             # for _ in np.arange(vid_model.nframes):
             # Reading in next frame
             ret, frame = vid_model.read()
             if ret is False:
                 break
-            frame = keypoints_model.annot_keypoints(frame, i.value)
+            # Add keypoints to frame
+            frame = keypoints_model.annot_keypoints(frame, i)
             frame = cv2.resize(frame, (w, h), interpolation=cv2.INTER_AREA)
             # Making graph frame
             graph_viewer.plot_update(
-                i.value / vid_model.fps,
-                xmin=(i.value - window_size) / vid_model.fps,
-                xmax=(i.value + window_size) / vid_model.fps,
+                i / vid_model.fps,
+                xmin=(i - window_size) / vid_model.fps,
+                xmax=(i + window_size) / vid_model.fps,
             )
             graph_frame = graph_viewer.plot_2_cv()
             # Writing annotated frame to the VideoWriter
             out_cap.write(np.concatenate((frame, graph_frame), axis=0))
-            # Update i
-            with i.get_lock():
-                i.value += 1
         # Release the VideoWriter (i.e. save)
         out_cap.release()
-        # Close the graph_viewer
+        # Close the QApplication
         app.quit()
 
 
@@ -524,5 +572,7 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
 
+    sys.exit(app.exec())
+    sys.exit(app.exec())
     sys.exit(app.exec())
     sys.exit(app.exec())
