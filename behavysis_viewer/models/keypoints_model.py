@@ -6,7 +6,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from behavysis_core.constants import PROCESS_COL
+from behavysis_core.constants import IndivColumns
 from behavysis_core.data_models.experiment_configs import ExperimentConfigs
 from behavysis_core.mixins.df_io_mixin import DFIOMixin
 from behavysis_core.mixins.keypoints_mixin import KeypointsMixin
@@ -48,7 +48,7 @@ class KeypointsModel:
         configs : ExperimentConfigs
             _description_
         """
-        self.raw_dlc_df = DFIOMixin.read_feather(fp)
+        self.raw_dlc_df = KeypointsMixin.read_feather(fp)
         self.set_configs(configs)
         self.dlc_2_annot()
 
@@ -62,10 +62,10 @@ class KeypointsModel:
             The experiment configurations.
         """
         configs_filt = configs.user.evaluate.eval_vid
-        self.colour_level = configs_filt.colour_level
-        self.pcutoff = configs_filt.pcutoff
-        self.radius = configs_filt.radius
-        self.cmap = configs_filt.cmap
+        self.colour_level = configs.get_ref(configs_filt.colour_level)
+        self.pcutoff = configs.get_ref(configs_filt.pcutoff)
+        self.radius = configs.get_ref(configs_filt.radius)
+        self.cmap = configs.get_ref(configs_filt.cmap)
 
     def dlc_2_annot(self):
         """
@@ -84,9 +84,9 @@ class KeypointsModel:
         dlc_df = self.raw_dlc_df.copy()
         dlc_df = KeypointsMixin.clean_headings(dlc_df)
         # Modifying dlc_df and making list of how to select dlc_df components to optimise processing
-        # Filtering out PROCESS_COL columns
-        if PROCESS_COL in dlc_df.columns.unique("individuals"):
-            dlc_df.drop(columns=PROCESS_COL, level="individuals")
+        # Filtering out PROCESS "invidividuals" in columns
+        if IndivColumns.PROCESS.value in dlc_df.columns.unique("individuals"):
+            dlc_df.drop(columns=IndivColumns.PROCESS.value, level="individuals")
         # Getting (indivs, bpts) MultiIndex
         indivs_bpts_ls = dlc_df.columns.droplevel("coords").unique()
         # Rounding and casting to correct dtypes - "x" and "y" values are ints

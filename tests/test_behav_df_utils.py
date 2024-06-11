@@ -1,12 +1,12 @@
 import numpy as np
 import pandas as pd
 import pytest
-from behavysis_core.mixins.behaviour_mixin import BehaviourMixin
+from behavysis_core.mixins.behav_mixin import BehavMixin
 
 
 @pytest.fixture(scope="function", autouse=False)
 def behavs_df():
-    df = pd.read_feather("tests/resources/behavs_df.feather")
+    df = BehavMixin.read_feather("tests/resources/behavs_df.feather")
     df = df.reindex(columns=sorted(df.columns))
     yield df
 
@@ -17,13 +17,13 @@ def rand_img():
 
 
 def test_frames_2_bouts_2_frames(behavs_df):
-    bouts = BehaviourMixin.frames_2_bouts(behavs_df)
+    bouts = BehavMixin.frames_2_bouts(behavs_df)
     assert bouts.start == behavs_df.index[0]
     assert bouts.stop == behavs_df.index[-1] + 1
     assert bouts.bouts is not None
 
-    behavs_df2 = BehaviourMixin.bouts_2_frames(bouts)
+    behavs_df2 = BehavMixin.bouts_2_frames(bouts)
     assert behavs_df2.equals(behavs_df)
 
-    bouts2 = BehaviourMixin.frames_2_bouts(behavs_df2)
+    bouts2 = BehavMixin.frames_2_bouts(behavs_df2)
     assert bouts == bouts2

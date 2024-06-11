@@ -1,7 +1,7 @@
 import numpy as np
 from behavysis_core.data_models.bouts import Bouts
 from behavysis_core.data_models.experiment_configs import ExperimentConfigs
-from behavysis_core.mixins.behaviour_mixin import BehaviourMixin
+from behavysis_core.mixins.behav_mixin import BehavMixin
 from behavysis_core.mixins.df_io_mixin import DFIOMixin
 from PySide6.QtCore import QAbstractListModel, Qt
 from PySide6.QtGui import QColor
@@ -41,13 +41,13 @@ class BoutsListModel(QAbstractListModel):
 
     def load(self, fp: str, configs: ExperimentConfigs):
         # Getting necessary configs
-        user_behavs = configs.user.classify_behaviours.user_behavs
+        user_behavs = configs.get_ref(configs.user.classify_behaviours.user_behavs)
         # Loading data
-        behavs_df = DFIOMixin.read_feather(fp)
+        behavs_df = BehavMixin.read_feather(fp)
         # Adding actual and user_behavs to behavs_df (if they aren't already there)
-        behavs_df = BehaviourMixin.frames_add_behaviour(behavs_df, user_behavs)
+        behavs_df = BehavMixin.frames_add_behaviour(behavs_df, user_behavs)
         # behavs_df to bouts
-        self.bouts = BehaviourMixin.frames_2_bouts(behavs_df)
+        self.bouts = BehavMixin.frames_2_bouts(behavs_df)
         # print(self.bouts.model_dumps_json(indent=2))
         self.layoutChanged.emit()
 

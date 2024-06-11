@@ -95,7 +95,7 @@ class GraphView(PlotWidget):
         return img_cv
 
 
-from behavysis_core.mixins.behaviour_mixin import BehaviourMixin
+from behavysis_core.mixins.behav_mixin import BehavMixin
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -107,9 +107,9 @@ if __name__ == "__main__":
 
     fp = "/Users/timothylee/Desktop/Work/dev/behavysis_viewer/tests/resources/2_Round1.1_20220530_AGG-MOA_test3-M3_a2.feather"
 
-    behavs_df = pd.read_feather(fp)
+    behavs_df = BehavMixin.read_feather(fp)
     # frames_df to bouts_dict
-    bouts_dict = BehaviourMixin.frames_2_bouts(behavs_df)
+    bouts_dict = BehavMixin.frames_2_bouts(behavs_df)
     # Updating graph_viewer
     start_ls = np.array([])
     stop_ls = np.array([])

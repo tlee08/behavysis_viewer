@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import pandas as pd
 import pytest
-from behavysis_core.constants import BEHAV_COLUMN_NAMES
-from behavysis_core.mixins.behaviour_mixin import BehaviourMixin
+from behavysis_core.constants import BEHAV_CN
+from behavysis_core.mixins.behav_mixin import BehavMixin
 
 from behavysis_viewer.widgets.graph_view import GraphView
 
@@ -27,13 +27,11 @@ def rand_bouts():
     pred_vect = np.sin(frames_vect) + (np.random.rand(10000) * 2 - 1)
     pred_vect = pred_vect > 0
     frames_df = pd.DataFrame({("my_behav", "pred"): pred_vect}, index=frames_vect)
-    frames_df.columns = pd.MultiIndex.from_tuples(
-        frames_df.columns, names=BEHAV_COLUMN_NAMES
-    )
+    frames_df.columns = pd.MultiIndex.from_tuples(frames_df.columns, names=BEHAV_CN)
     # Adding in "actual" column  and "my_user_behav" column
-    frames_df = BehaviourMixin.frames_add_behaviour(frames_df, ["my_user_behav"])
+    frames_df = BehavMixin.frames_add_behaviour(frames_df, ["my_user_behav"])
     # frames_df to bouts
-    bouts = BehaviourMixin.frames_to_bouts(frames_df)
+    bouts = BehavMixin.frames_to_bouts(frames_df)
 
     yield bouts
 

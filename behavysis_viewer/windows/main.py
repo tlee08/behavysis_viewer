@@ -6,7 +6,7 @@ from multiprocessing.sharedctypes import Synchronized
 import cv2
 import numpy as np
 from behavysis_core.data_models.experiment_configs import ExperimentConfigs
-from behavysis_core.mixins.behaviour_mixin import BehaviourMixin
+from behavysis_core.mixins.behav_mixin import BehavMixin
 from behavysis_core.mixins.df_io_mixin import DFIOMixin
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
@@ -355,7 +355,7 @@ class MainWindow(QMainWindow, WindowMixin):
             # Loading in BoutInspectModel row
             self.bout_inspect_model.load(bout)
             # Setting bout inspect header text
-            self.ui.bout_inspect_header.setText(f"{index.row()} - {bout.behaviour}")
+            self.ui.bout_inspect_header.setText(f"{bout.behaviour} - {index.row()}")
             # Linking is_behav rbtns
             self.rbtns[bout.actual].toggle()
             # Jumping to bout start
@@ -428,7 +428,7 @@ class MainWindow(QMainWindow, WindowMixin):
             )[0]
         if fp:
             # bouts to behavs_df
-            behavs_df = BehaviourMixin.bouts_2_frames(self.bouts_model.bouts)
+            behavs_df = BehavMixin.bouts_2_frames(self.bouts_model.bouts)
             # Writing to feather file
             DFIOMixin.write_feather(behavs_df, fp)
             self.ui.statusbar.showMessage(
