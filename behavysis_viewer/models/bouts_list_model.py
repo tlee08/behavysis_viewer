@@ -40,12 +40,8 @@ class BoutsListModel(QAbstractListModel):
         return True
 
     def load(self, fp: str, configs: ExperimentConfigs):
-        # Getting necessary configs
-        user_behavs = configs.get_ref(configs.user.classify_behaviours.user_behavs)
-        # Loading data
+        # Loading behaviour data
         behavs_df = BehavMixin.read_feather(fp)
-        # Adding actual and user_behavs to behavs_df (if they aren't already there)
-        behavs_df = BehavMixin.frames_add_behaviour(behavs_df, user_behavs)
         # behavs_df to bouts
         self.bouts = BehavMixin.frames_2_bouts(behavs_df)
         # print(self.bouts.model_dumps_json(indent=2))
