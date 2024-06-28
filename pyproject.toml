@@ -11,7 +11,7 @@ packages = [{ include = "behavysis_viewer" }]
 python = ">=3.9,<3.13"
 PySide6 = "^6.7.0"
 pyqtgraph = "^0.13.6"
-behavysis_core = "^0.1.1"
+behavysis_core = "^0.1.3"
 
 [tool.poetry.group.dev.dependencies]
 behavysis_core = { path = "../behavysis_core", develop = true }
