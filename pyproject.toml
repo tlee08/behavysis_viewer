@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "behavysis_viewer"
-version = "0.1.2"
+version = "0.1.3"
 description = "A semi-automated behaviour verification, processing and analysis package."
 authors = ["BowenLab"]
 license = "LGPL-3.0-or-later"
