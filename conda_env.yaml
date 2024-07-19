@@ -1,7 +1,7 @@
 # install: conda env create -f behavysis_viewer_dev.yaml
 # update: conda env update -f behavysis_viewer_dev.yaml --prune
 
-name: behavysis_viewer_env
+name: behavysis_viewer
 channels:
   - conda-forge
   - defaults
