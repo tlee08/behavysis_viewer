@@ -12,6 +12,7 @@ from PySide6.QtWidgets import QApplication
 
 from behavysis_core.data_models.bouts import Bouts
 from behavysis_core.data_models.experiment_configs import ExperimentConfigs
+from behavysis_core.mixins.behav_mixin import BehavMixin
 from behavysis_viewer.utils.constants import VALUE2COLOR
 from behavysis_viewer.utils.cv2_qt_mixin import Cv2QtMixin
 
@@ -134,8 +135,6 @@ class GraphView(PlotWidget):
         # Return cv2 image
         return img_cv
 
-
-from behavysis_core.mixins.behav_mixin import BehavMixin
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
