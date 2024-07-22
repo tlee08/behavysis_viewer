@@ -1,34 +1,28 @@
 import sys
-import time
-from multiprocessing import Process, Value
-from multiprocessing.sharedctypes import Synchronized
+from multiprocessing import Process
 
 import cv2
 import numpy as np
-from behavysis_core.data_models.experiment_configs import ExperimentConfigs
-from behavysis_core.mixins.behav_mixin import BehavMixin
-from behavysis_core.mixins.df_io_mixin import DFIOMixin
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QApplication,
-    QDialog,
     QFileDialog,
-    QLabel,
     QMainWindow,
     QMessageBox,
-    QVBoxLayout,
-    QWidget,
 )
 from tqdm import trange
 
+from behavysis_core.data_models.experiment_configs import ExperimentConfigs
+from behavysis_core.mixins.behav_mixin import BehavMixin
+from behavysis_core.mixins.df_io_mixin import DFIOMixin
 from behavysis_viewer.models.bout_inspect_list_model import BoutInspectListModel
 from behavysis_viewer.models.bouts_list_model import BoutsListModel
 from behavysis_viewer.models.exp_file_manager import ExpFileManager
 from behavysis_viewer.models.keypoints_model import KeypointsModel
 from behavysis_viewer.models.vid_model import VidModel
 from behavysis_viewer.ui.main_ui import Ui_MainWindow
-from behavysis_viewer.utils.constants import STATUS_MSG_TIMEOUT
+from behavysis_viewer.utils.constants import STATUS_MSG_TIMEOUT, VALUE2COLOR
 from behavysis_viewer.widgets.graph_view import GraphView
 from behavysis_viewer.windows.help import HelpWindow
 from behavysis_viewer.windows.settings import SettingsWindow
@@ -80,6 +74,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.resize_viewer(360, 240)
 
         # Initialising models and connecting to views
+        self._init_vid_graph_widgets()
         self._init_models()
         self._init_model_views()
 
@@ -138,6 +133,12 @@ class MainWindow(QMainWindow, WindowMixin):
     # INITIALIZATION METHODS
     ####################################################################
 
+    def _init_vid_graph_widgets(self):
+        """__summary__"""
+        # Initialising video viewer and graph viewer
+        self.ui.vid_viewer.main = self
+        self.ui.graph_viewer.main = self
+
     def _init_models(self):
         """__summary__"""
         # Init file manager
@@ -167,13 +168,22 @@ class MainWindow(QMainWindow, WindowMixin):
         # SIGNALS AND SLOTS: MODELS
         # bouts_model
         m = self.bouts_model
+        # nil connections
         # bout_inspect_model
         m = self.bout_inspect_model
+        # Making bout_inspect enabled when a bout is selected
         m.layoutChanged.connect(
-            lambda: self.ui.bout_inspect_widget.setEnabled(m.is_selected)
+            lambda: self.ui.bout_inspect_widget.setEnabled(m.id >= 0)
         )
-        m.layoutChanged.connect(
+        # Making bout_inspect select user-defined behavs enabled when bout "actual" is True
+        m.actual_signal.connect(
             lambda: self.ui.bout_inspect_view.setEnabled(m.bout.actual == 1)
+        )
+        # Remaking bout's graph_viewer bar when bout's "actual" changes
+        m.actual_signal.connect(
+            lambda: self.ui.graph_viewer.update_bar(
+                m.id, {"brush": VALUE2COLOR[m.bout.actual]}
+            )
         )
 
     def _init_conns_views(self):
@@ -214,10 +224,7 @@ class MainWindow(QMainWindow, WindowMixin):
             lambda: self.set_frame(self.curr_i + self.vid_model.jump_size)
         )
         # Handle bout-related video buttons
-        self.ui.bout_replay_btn.clicked.connect(
-            self.select_bout
-            # lambda: self.set_frame(self.bout_inspect_model.start)
-        )
+        self.ui.bout_replay_btn.clicked.connect(self.select_bout)
 
     def _init_conns_io(self):
         """__summary__"""
@@ -353,13 +360,21 @@ class MainWindow(QMainWindow, WindowMixin):
             # Getting bout df row
             bout = self.bouts_model.bouts.bouts[index.row()]
             # Loading in BoutInspectModel row
-            self.bout_inspect_model.load(bout)
+            self.bout_inspect_model.load(bout, index.row())
             # Setting bout inspect header text
             self.ui.bout_inspect_header.setText(f"{bout.behaviour} - {index.row()}")
             # Linking is_behav rbtns
             self.rbtns[bout.actual].toggle()
             # Jumping to bout start
             self.set_frame(bout.start - self.focus_size_frames)
+
+    def graph_viewer_select_bout(self, e, id_):
+        # Getting index of bout with given `id_`
+        idx = self.bouts_model.index(id_)
+        # Selecting this bout in bouts_view list
+        self.ui.bouts_view.setCurrentIndex(idx)
+        # Jumping to that bout in bouts_view list
+        self.ui.bouts_view.scrollTo(idx)
 
     def update_frame(self):
         """__summary__"""
@@ -545,7 +560,6 @@ class MainWindow(QMainWindow, WindowMixin):
 
 
 if __name__ == "__main__":
-
     app = QApplication(sys.argv)
 
     window = MainWindow()

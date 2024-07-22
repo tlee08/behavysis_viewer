@@ -1,7 +1,12 @@
-from behavysis_core.data_models.bouts import Bout
-from behavysis_viewer.utils.constants import CHECKSTATE2VALUE, VALUE2CHECKSTATE, VALUE2COLOR
-from PySide6.QtCore import QAbstractListModel, Qt
+from PySide6.QtCore import QAbstractListModel, Qt, Signal
 from PySide6.QtGui import QColor
+
+from behavysis_core.data_models.bouts import Bout
+from behavysis_viewer.utils.constants import (
+    CHECKSTATE2VALUE,
+    VALUE2CHECKSTATE,
+    VALUE2COLOR,
+)
 
 
 class BoutInspectListModel(QAbstractListModel):
@@ -13,13 +18,15 @@ class BoutInspectListModel(QAbstractListModel):
     """
 
     bout: Bout
-    is_selected: bool
+    id: int
+
+    actual_signal = Signal()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.bout = Bout(start=-1, stop=-1, behaviour="nil", actual=0, user_defined={})
-        self.is_selected = False
+        self.id = -1
 
     @property
     def start(self):
@@ -33,14 +40,14 @@ class BoutInspectListModel(QAbstractListModel):
     def actual(self):
         return self.bout.actual
 
-    @property
-    def user_defined(self):
-        return list(self.bout.user_defined.items())
-
     @actual.setter
     def actual(self, value: int) -> None:
         self.bout.actual = value
-        self.layoutChanged.emit()
+        self.actual_signal.emit()
+
+    @property
+    def user_defined(self):
+        return list(self.bout.user_defined.items())
 
     def data(self, index, role):
         """
@@ -68,9 +75,9 @@ class BoutInspectListModel(QAbstractListModel):
         self.dataChanged.emit(index, index)
         return True
 
-    def load(self, bout: Bout):
+    def load(self, bout: Bout, id_: int):
         self.bout = bout
-        self.is_selected = True
+        self.id = id_
         # For QListView
         self.layoutChanged.emit()
 

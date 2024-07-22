@@ -2,13 +2,10 @@
 _summary_
 """
 
-import sys
-
 import cv2
 import numpy as np
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QImage, QPixmap
-from PySide6.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QLabel
 
 from behavysis_viewer.utils.cv2_qt_mixin import Cv2QtMixin
 
@@ -26,6 +23,8 @@ class CvView(QLabel):
             _description_, by default None
         """
         super().__init__(parent)
+
+        self.main = None
 
         self.display_grey()
 

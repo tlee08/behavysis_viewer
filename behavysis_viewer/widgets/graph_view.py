@@ -1,19 +1,26 @@
+from __future__ import annotations
+
 import sys
+from typing import TYPE_CHECKING
 
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from behavysis_core.data_models.bouts import Bouts
-from behavysis_core.data_models.experiment_configs import ExperimentConfigs
-from pyqtgraph import BarGraphItem, InfiniteLine, PlotWidget, mkPen
+from pyqtgraph import BarGraphItem, InfiniteLine, PlotWidget, mkBrush
 from pyqtgraph.exporters import ImageExporter
 from PySide6.QtWidgets import QApplication
 
+from behavysis_core.data_models.bouts import Bouts
+from behavysis_core.data_models.experiment_configs import ExperimentConfigs
+from behavysis_viewer.utils.constants import VALUE2COLOR
 from behavysis_viewer.utils.cv2_qt_mixin import Cv2QtMixin
+
+if TYPE_CHECKING:
+    from behavysis_viewer.windows.main import MainWindow
 
 
 class GraphView(PlotWidget):
+    main: MainWindow
 
     bars: list[BarGraphItem]
     time_marker_line: InfiniteLine
@@ -21,7 +28,10 @@ class GraphView(PlotWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.bars = []
+        # Linking reference to main window
+        self.main = None
+
+        self.bars = {}
         self.time_marker_line = InfiniteLine(pos=0, angle=90)
 
     def set_plot_attr(self, **kwargs):
@@ -45,25 +55,36 @@ class GraphView(PlotWidget):
         start_ls = np.array([i.start for i in bouts.bouts]) / fps
         stop_ls = np.array([i.stop for i in bouts.bouts]) / fps
         behavs_ls = np.array([i.behaviour for i in bouts.bouts])
+        actual_ls = np.array([i.actual for i in bouts.bouts])
+        print(actual_ls)
         # Plotting data
-        self.plot_init(start_ls, stop_ls, behavs_ls)
+        self.plot_init(start_ls, stop_ls, behavs_ls, actual_ls)
 
-    def plot_init(self, start_ls, stop_ls, behavs_ls, **kwargs):
+    def plot_init(self, start_ls, stop_ls, behavs_ls, actual_ls, **kwargs):
         behavs_ls_i, behavs = pd.factorize(behavs_ls)
         self.clear()
-        self.bars = []
+        self.bars = {}
         # Plotting data
         # TODO: fix this up. Un-pythonic for loop
         # TODO: change colour of bar depending on bout "actual" value
-        for i, _ in enumerate(start_ls):
+        for i, (start, stop, behav, actual) in enumerate(
+            zip(start_ls, stop_ls, behavs_ls_i, actual_ls)
+        ):
+            # Making bar item
             bar_ = BarGraphItem(
-                x0=start_ls[i],
-                x1=stop_ls[i],
-                y=behavs_ls_i[i],
+                x0=start,
+                x1=stop,
+                y=behav,
                 height=0.5,
-                # pen=mkPen(color="r"),
+                brush=mkBrush(color=VALUE2COLOR[actual]),
             )
-            self.bars.append(bar_)
+            # Adding double click event
+            bar_.mouseDoubleClickEvent = lambda e, id_=i: self._on_bar_double_click(
+                e, id_
+            )
+            # Storing in bars dict
+            self.bars[i] = bar_
+            # Adding to plot
             self.addItem(bar_)
         # self.plot(x, y)
         # Setting current time marker line
@@ -72,11 +93,30 @@ class GraphView(PlotWidget):
         # Plot aesthetics
         self.set_plot_attr(**kwargs)
 
+    def _on_bar_double_click(self, e, id_):
+        if self.main is not None:
+            self.main.graph_viewer_select_bout(e, id_)
+
     def plot_update(self, i, **kwargs):
         # Plotting data
         self.time_marker_line.setPos(i)
         # Plot aesthetics
         self.set_plot_attr(**kwargs)
+
+    def update_bar(self, id_: int, opts: dict):
+        # Get old bar
+        old_bar = self.bars[id_]
+        # Make new bar
+        new_bar = BarGraphItem(**{**old_bar.opts, **opts})
+        # Ensure the new bar has the same mouseDoubleClickEvent
+        new_bar.mouseDoubleClickEvent = old_bar.mouseDoubleClickEvent
+
+        # Remove old bar from plot
+        self.removeItem(old_bar)
+        # Add new bar to plot
+        self.addItem(new_bar)
+        # Replace old bar with new bar
+        self.bars[id_] = new_bar
 
     def plot_2_cv(self):
         # Making pyqtgraph image exporter to bytes

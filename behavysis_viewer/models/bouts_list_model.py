@@ -1,16 +1,14 @@
 import numpy as np
-from behavysis_core.data_models.bouts import Bouts
-from behavysis_core.data_models.experiment_configs import ExperimentConfigs
-from behavysis_core.mixins.behav_mixin import BehavMixin
-from behavysis_core.mixins.df_io_mixin import DFIOMixin
 from PySide6.QtCore import QAbstractListModel, Qt
 from PySide6.QtGui import QColor
 
+from behavysis_core.data_models.bouts import Bouts
+from behavysis_core.data_models.experiment_configs import ExperimentConfigs
+from behavysis_core.mixins.behav_mixin import BehavMixin
 from behavysis_viewer.utils.constants import VALUE2COLOR
 
 
 class BoutsListModel(QAbstractListModel):
-
     bouts: Bouts
 
     def __init__(self, *args, **kwargs):
