@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "behavysis_viewer"
-version = "0.1.4"
+version = "0.1.1"
 description = "A semi-automated behaviour verification, processing and analysis package."
 authors = ["BowenLab"]
 license = "LGPL-3.0-or-later"
@@ -10,7 +10,7 @@ repository = "https://github.com/tlee08/behavysis_viewer"
 packages = [{ include = "behavysis_viewer" }]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = "^3.12"
 PySide6 = "^6.7.0"
 pyqtgraph = "^0.13.6"
 behavysis_core = "^0.1.3"
