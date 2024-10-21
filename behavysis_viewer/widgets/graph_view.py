@@ -6,13 +6,13 @@ from typing import TYPE_CHECKING
 import cv2
 import numpy as np
 import pandas as pd
+from behavysis_core.data_models.bouts import Bouts
+from behavysis_core.data_models.experiment_configs import ExperimentConfigs
+from behavysis_core.mixins.behav_mixin import BehavMixin
 from pyqtgraph import BarGraphItem, InfiniteLine, PlotWidget, mkBrush
 from pyqtgraph.exporters import ImageExporter
 from PySide6.QtWidgets import QApplication
 
-from behavysis_core.data_models.bouts import Bouts
-from behavysis_core.data_models.experiment_configs import ExperimentConfigs
-from behavysis_core.mixins.behav_mixin import BehavMixin
 from behavysis_viewer.utils.constants import VALUE2COLOR
 from behavysis_viewer.utils.cv2_qt_mixin import Cv2QtMixin
 
@@ -21,9 +21,9 @@ if TYPE_CHECKING:
 
 
 class GraphView(PlotWidget):
-    main: MainWindow
+    main: MainWindow | None
 
-    bars: list[BarGraphItem]
+    bars: dict[int, BarGraphItem]
     time_marker_line: InfiniteLine
 
     def __init__(self, *args, **kwargs):
@@ -31,9 +31,12 @@ class GraphView(PlotWidget):
 
         # Linking reference to main window
         self.main = None
-
+        # dict of BarGraphItem objects, indicating bout bars
         self.bars = {}
+        # InfiniteLine object, indicating current time marker
         self.time_marker_line = InfiniteLine(pos=0, angle=90)
+        # Brining time_marker_line to front
+        self.time_marker_line.setZValue(10)
 
     def set_plot_attr(self, **kwargs):
         if "xmin" in kwargs and "xmax" in kwargs:
@@ -62,12 +65,14 @@ class GraphView(PlotWidget):
         self.plot_init(start_ls, stop_ls, behavs_ls, actual_ls)
 
     def plot_init(self, start_ls, stop_ls, behavs_ls, actual_ls, **kwargs):
-        behavs_ls_i, behavs = pd.factorize(behavs_ls)
+        # Clearing plot and data
         self.clear()
         self.bars = {}
-        # Plotting data
-        # TODO: fix this up. Un-pythonic for loop
-        # TODO: change colour of bar depending on bout "actual" value
+        # Setting current time marker line
+        self.time_marker_line.setPos(0)
+        self.addItem(self.time_marker_line)
+        # Plotting bouts as bars
+        behavs_ls_i, behavs_cat = pd.factorize(behavs_ls)
         for i, (start, stop, behav, actual) in enumerate(
             zip(start_ls, stop_ls, behavs_ls_i, actual_ls)
         ):
@@ -80,23 +85,24 @@ class GraphView(PlotWidget):
                 brush=mkBrush(color=VALUE2COLOR[actual]),
             )
             # Adding double click event
-            bar_.mouseDoubleClickEvent = lambda e, id_=i: self._on_bar_double_click(
-                e, id_
+            bar_.mouseDoubleClickEvent = lambda event, id_=i: self._on_bar_double_click(
+                event, id_
             )
             # Storing in bars dict
             self.bars[i] = bar_
             # Adding to plot
             self.addItem(bar_)
-        # self.plot(x, y)
-        # Setting current time marker line
-        self.time_marker_line.setPos(0)
-        self.addItem(self.time_marker_line)
-        # Plot aesthetics
+        # Setting y-ticks to behavs_cat (categorical)
+        self.getAxis("left").setTicks([[(i, v) for i, v in enumerate(behavs_cat)]])
+        # Setting plot aesthetics
         self.set_plot_attr(**kwargs)
 
-    def _on_bar_double_click(self, e, id_):
+    def _on_bar_double_click(self, event, id_):
         if self.main is not None:
-            self.main.graph_viewer_select_bout(e, id_)
+            # Getting index of bout with given `id_`
+            index = self.main.bouts_model.index(id_)
+            # Selecting this bout in bouts_view list
+            self.main.ui.bouts_view.setCurrentIndex(index)
 
     def plot_update(self, i, **kwargs):
         # Plotting data

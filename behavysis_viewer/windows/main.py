@@ -3,6 +3,9 @@ from multiprocessing import Process
 
 import cv2
 import numpy as np
+from behavysis_core.data_models.experiment_configs import ExperimentConfigs
+from behavysis_core.mixins.behav_mixin import BehavMixin
+from behavysis_core.mixins.df_io_mixin import DFIOMixin
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -13,9 +16,6 @@ from PySide6.QtWidgets import (
 )
 from tqdm import trange
 
-from behavysis_core.data_models.experiment_configs import ExperimentConfigs
-from behavysis_core.mixins.behav_mixin import BehavMixin
-from behavysis_core.mixins.df_io_mixin import DFIOMixin
 from behavysis_viewer.models.bout_inspect_list_model import BoutInspectListModel
 from behavysis_viewer.models.bouts_list_model import BoutsListModel
 from behavysis_viewer.models.exp_file_manager import ExpFileManager
@@ -356,6 +356,7 @@ class MainWindow(QMainWindow, WindowMixin):
         """__summary__"""
         # Getting selected bout QIndex (if there exists one)
         if len(self.ui.bouts_view.selectedIndexes()) > 0:
+            # Getting selected bout QIndex
             index = self.ui.bouts_view.selectedIndexes()[0]
             # Getting bout df row
             bout = self.bouts_model.bouts.bouts[index.row()]
@@ -365,16 +366,18 @@ class MainWindow(QMainWindow, WindowMixin):
             self.ui.bout_inspect_header.setText(f"{bout.behaviour} - {index.row()}")
             # Linking is_behav rbtns
             self.rbtns[bout.actual].toggle()
-            # Jumping to bout start
+            # Jumping to bout start in video
             self.set_frame(bout.start - self.focus_size_frames)
+            # Jumping to bout in bouts_view list
+            self.ui.bouts_view.scrollTo(index)
 
-    def graph_viewer_select_bout(self, e, id_):
-        # Getting index of bout with given `id_`
-        idx = self.bouts_model.index(id_)
-        # Selecting this bout in bouts_view list
-        self.ui.bouts_view.setCurrentIndex(idx)
-        # Jumping to that bout in bouts_view list
-        self.ui.bouts_view.scrollTo(idx)
+    # def graph_viewer_select_bout(self, e, id_):
+    #     # Getting index of bout with given `id_`
+    #     idx = self.bouts_model.index(id_)
+    #     # Selecting this bout in bouts_view list
+    #     self.ui.bouts_view.setCurrentIndex(idx)
+    #     # Jumping to that bout in bouts_view list
+    #     self.ui.bouts_view.scrollTo(idx)
 
     def update_frame(self):
         """__summary__"""
@@ -565,28 +568,4 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
 
-    sys.exit(app.exec())
-
-    app = QApplication(sys.argv)
-
-    window = MainWindow()
-    window.show()
-
-    sys.exit(app.exec())
-
-    app = QApplication(sys.argv)
-
-    window = MainWindow()
-    window.show()
-
-    sys.exit(app.exec())
-    sys.exit(app.exec())
-    app = QApplication(sys.argv)
-
-    window = MainWindow()
-    window.show()
-
-    sys.exit(app.exec())
-    sys.exit(app.exec())
-    sys.exit(app.exec())
     sys.exit(app.exec())
