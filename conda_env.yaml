@@ -9,7 +9,7 @@ dependencies:
   - python
   - pip
   - ipykernel
-  - nb_conda
   - ffmpeg
+  - hdf5
   - pip:
       - behavysis_viewer
