@@ -3,9 +3,6 @@ from multiprocessing import Process
 
 import cv2
 import numpy as np
-from behavysis_core.data_models.experiment_configs import ExperimentConfigs
-from behavysis_core.mixins.behav_mixin import BehavMixin
-from behavysis_core.mixins.df_io_mixin import DFIOMixin
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -16,6 +13,9 @@ from PySide6.QtWidgets import (
 )
 from tqdm import trange
 
+from behavysis_core.df_classes.bouts_df import BoutsDf
+from behavysis_core.df_classes.df_mixin import DFMixin
+from behavysis_core.pydantic_models.experiment_configs import ExperimentConfigs
 from behavysis_viewer.models.bout_inspect_list_model import BoutInspectListModel
 from behavysis_viewer.models.bouts_list_model import BoutsListModel
 from behavysis_viewer.models.exp_file_manager import ExpFileManager
@@ -446,9 +446,9 @@ class MainWindow(QMainWindow, WindowMixin):
             )[0]
         if fp:
             # bouts to behavs_df
-            behavs_df = BehavMixin.bouts_2_frames(self.bouts_model.bouts)
+            behavs_df = BoutsDf.bouts2frames(self.bouts_model.bouts)
             # Writing to feather file
-            DFIOMixin.write_feather(behavs_df, fp)
+            DFMixin.write_feather(behavs_df, fp)
             self.ui.statusbar.showMessage(
                 f"Saved scored behaviour frames to {fp}", timeout=STATUS_MSG_TIMEOUT
             )

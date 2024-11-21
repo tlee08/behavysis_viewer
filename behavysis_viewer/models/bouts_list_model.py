@@ -2,9 +2,10 @@ import numpy as np
 from PySide6.QtCore import QAbstractListModel, Qt
 from PySide6.QtGui import QColor
 
-from behavysis_core.data_models.bouts import Bouts
-from behavysis_core.data_models.experiment_configs import ExperimentConfigs
-from behavysis_core.mixins.behav_mixin import BehavMixin
+from behavysis_core.df_classes.behav_df import BehavDf
+from behavysis_core.df_classes.bouts_df import BoutsDf
+from behavysis_core.pydantic_models.bouts import Bouts
+from behavysis_core.pydantic_models.experiment_configs import ExperimentConfigs
 from behavysis_viewer.utils.constants import VALUE2COLOR
 
 
@@ -39,9 +40,9 @@ class BoutsListModel(QAbstractListModel):
 
     def load(self, fp: str, configs: ExperimentConfigs):
         # Loading behaviour data
-        behavs_df = BehavMixin.read_feather(fp)
+        behavs_df = BehavDf.read_feather(fp)
         # behavs_df to bouts
-        self.bouts = BehavMixin.frames_2_bouts(behavs_df)
+        self.bouts = BoutsDf.frames2bouts(behavs_df)
         # print(self.bouts.model_dumps_json(indent=2))
         self.layoutChanged.emit()
 

@@ -6,10 +6,9 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from behavysis_core.constants import IndivColumns
-from behavysis_core.data_models.experiment_configs import ExperimentConfigs
-from behavysis_core.mixins.df_io_mixin import DFIOMixin
-from behavysis_core.mixins.keypoints_mixin import KeypointsMixin
+
+from behavysis_core.df_classes.keypoints_df import IndivColumns, KeypointsDf
+from behavysis_core.pydantic_models.experiment_configs import ExperimentConfigs
 
 
 class KeypointsModel:
@@ -48,7 +47,7 @@ class KeypointsModel:
         configs : ExperimentConfigs
             _description_
         """
-        self.raw_dlc_df = KeypointsMixin.read_feather(fp)
+        self.raw_dlc_df = KeypointsDf.read_feather(fp)
         self.set_configs(configs)
         self.dlc_2_annot()
 
@@ -82,7 +81,7 @@ class KeypointsModel:
             None
         """
         dlc_df = self.raw_dlc_df.copy()
-        dlc_df = KeypointsMixin.clean_headings(dlc_df)
+        dlc_df = KeypointsDf.clean_headings(dlc_df)
         # Modifying dlc_df and making list of how to select dlc_df components to optimise processing
         # Filtering out PROCESS "invidividuals" in columns
         if IndivColumns.PROCESS.value in dlc_df.columns.unique("individuals"):

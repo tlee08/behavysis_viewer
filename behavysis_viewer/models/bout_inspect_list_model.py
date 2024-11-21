@@ -1,7 +1,7 @@
 from PySide6.QtCore import QAbstractListModel, Qt, Signal
 from PySide6.QtGui import QColor
 
-from behavysis_core.data_models.bouts import Bout
+from behavysis_core.pydantic_models.bouts import Bout
 from behavysis_viewer.utils.constants import (
     CHECKSTATE2VALUE,
     VALUE2CHECKSTATE,
