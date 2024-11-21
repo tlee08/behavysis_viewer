@@ -60,7 +60,7 @@ class KeypointsModel:
         configs : ExperimentConfigs
             The experiment configurations.
         """
-        configs_filt = configs.user.evaluate.eval_vid
+        configs_filt = configs.user.evaluate_vid
         self.colour_level = configs.get_ref(configs_filt.colour_level)
         self.pcutoff = configs.get_ref(configs_filt.pcutoff)
         self.radius = configs.get_ref(configs_filt.radius)
