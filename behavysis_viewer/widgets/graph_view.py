@@ -6,14 +6,14 @@ from typing import TYPE_CHECKING
 import cv2
 import numpy as np
 import pandas as pd
-from pyqtgraph import BarGraphItem, InfiniteLine, PlotWidget, mkBrush
-from pyqtgraph.exporters import ImageExporter
-from PySide6.QtWidgets import QApplication
-
 from behavysis_core.df_classes.behav_df import BehavDf
 from behavysis_core.df_classes.bouts_df import BoutsDf
 from behavysis_core.pydantic_models.bouts import Bouts
 from behavysis_core.pydantic_models.experiment_configs import ExperimentConfigs
+from pyqtgraph import BarGraphItem, InfiniteLine, PlotWidget, mkBrush
+from pyqtgraph.exporters import ImageExporter
+from PySide6.QtWidgets import QApplication
+
 from behavysis_viewer.utils.constants import VALUE2COLOR
 from behavysis_viewer.utils.cv2_qt_mixin import Cv2QtMixin
 
@@ -61,7 +61,6 @@ class GraphView(PlotWidget):
         stop_ls = np.array([i.stop for i in bouts.bouts]) / fps
         behavs_ls = np.array([i.behaviour for i in bouts.bouts])
         actual_ls = np.array([i.actual for i in bouts.bouts])
-        print(actual_ls)
         # Plotting data
         self.plot_init(start_ls, stop_ls, behavs_ls, actual_ls)
 
