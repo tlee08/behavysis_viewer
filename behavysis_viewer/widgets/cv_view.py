@@ -62,7 +62,7 @@ class CvView(QLabel):
         # Colour formatting img_cv
         img_cv = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
         # img_cv to QPixmap
-        img_qt = Cv2QtMixin.cv_2_qt(img_cv)
+        img_qt = Cv2QtMixin.cv2qt(img_cv)
         # QImage to QPixmap and displkaying on widget
         self.setPixmap(QPixmap.fromImage(img_qt))
 

@@ -132,7 +132,7 @@ class GraphView(PlotWidget):
         # Exporting to QImage (bytes)
         img_qt = exporter.export(toBytes=True)
         # QImage to cv2 image (using mixin)
-        img_cv = Cv2QtMixin.qt_2_cv(img_qt)
+        img_cv = Cv2QtMixin.qt2cv(img_qt)
         # cv2 BGR to RGB
         img_cv = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
         # Resize to widget size

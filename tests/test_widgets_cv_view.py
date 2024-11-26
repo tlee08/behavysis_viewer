@@ -1,10 +1,8 @@
-import cv2
 import numpy as np
 import pytest
-from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
 
-from behavysis_viewer.widgets.cv_view import CvView
 from behavysis_viewer.utils.cv2_qt_mixin import Cv2QtMixin
+from behavysis_viewer.widgets.cv_view import CvView
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -53,7 +51,7 @@ def test_cv_view_setFixedSize(cv_view, rand_img):
 
 
 def test_cv_view_cv_2_qt_2_cv(cv_view, rand_img):
-    img_cv2 = Cv2QtMixin.qt_2_cv(Cv2QtMixin.cv_2_qt(rand_img))
+    img_cv2 = Cv2QtMixin.qt2cv(Cv2QtMixin.cv2qt(rand_img))
     assert np.all(rand_img == img_cv2)
 
 
