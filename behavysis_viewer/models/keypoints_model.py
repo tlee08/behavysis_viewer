@@ -18,21 +18,16 @@ class KeypointsModel:
     raw_dlc_df: pd.DataFrame
     annot_dlc_df: pd.DataFrame
     indivs_bpts_ls: pd.MultiIndex
-    colours_ls = np.ndarray
+    colours_ls: tuple
     pcutoff: float
     radius: int
     colour_level: str
     cmap: str
 
     def __init__(self):
-        self.raw_dlc_df = None
-        self.annot_dlc_df = None
-        self.indivs_bpts_ls = None
-        self.colours_ls = None
-        self.pcutoff = None
-        self.radius = None
-        self.colour_level = None
-        self.cmap = None
+        self.raw_dlc_df = KeypointsDf.init_df(pd.Series())
+        self.set_configs(ExperimentConfigs())
+        self.dlc2annot()
 
     def load(self, fp: str, configs: ExperimentConfigs):
         """
