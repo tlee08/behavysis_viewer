@@ -3,6 +3,9 @@ from multiprocessing import Process
 
 import cv2
 import numpy as np
+from behavysis_core.df_classes.bouts_df import BoutsDf
+from behavysis_core.df_classes.df_mixin import DFMixin
+from behavysis_core.pydantic_models.experiment_configs import ExperimentConfigs
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -13,9 +16,6 @@ from PySide6.QtWidgets import (
 )
 from tqdm import trange
 
-from behavysis_core.df_classes.bouts_df import BoutsDf
-from behavysis_core.df_classes.df_mixin import DFMixin
-from behavysis_core.pydantic_models.experiment_configs import ExperimentConfigs
 from behavysis_viewer.models.bout_inspect_list_model import BoutInspectListModel
 from behavysis_viewer.models.bouts_list_model import BoutsListModel
 from behavysis_viewer.models.exp_file_manager import ExpFileManager
@@ -553,7 +553,7 @@ class MainWindow(QMainWindow, WindowMixin):
                 xmin=(i - window_size) / vid_model.fps,
                 xmax=(i + window_size) / vid_model.fps,
             )
-            graph_frame = graph_viewer.plot_2_cv()
+            graph_frame = graph_viewer.plot2cv()
             # Writing annotated frame to the VideoWriter
             out_cap.write(np.concatenate((frame, graph_frame), axis=0))
         # Release the VideoWriter (i.e. save)

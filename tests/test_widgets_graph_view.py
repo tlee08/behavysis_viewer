@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 import pytest
-from behavysis_core.constants import BehavCN
-from behavysis_core.mixins.behav_mixin import BehavMixin
-from behavysis_core.mixins.df_io_mixin import DFIOMixin
+from behavysis_core.df_classes.behav_df import BehavCN
+from behavysis_core.df_classes.bouts_df import BoutsDf
+from behavysis_core.mixins.misc_mixin import MiscMixin
 
 from behavysis_viewer.widgets.graph_view import GraphView
 
@@ -28,12 +28,13 @@ def rand_bouts():
     pred_vect = pred_vect > 0
     frames_df = pd.DataFrame({("my_behav", "pred"): pred_vect}, index=frames_vect)
     frames_df.columns = pd.MultiIndex.from_tuples(
-        frames_df.columns, names=DFIOMixin.enum_to_list(BehavCN)
+        frames_df.columns, names=MiscMixin.enum2tuple(BehavCN)
     )
     # Adding in "actual" column  and "my_user_behav" column
-    frames_df = BehavMixin.frames_add_behaviour(frames_df, ["my_user_behav"])
+    # TODO
+    # frames_df = BehavDf.frames_add_behaviour(frames_df, ["my_user_behav"])
     # frames_df to bouts
-    bouts = BehavMixin.frames_to_bouts(frames_df)
+    bouts = BoutsDf.frames2bouts(frames_df)
 
     yield bouts
 
@@ -47,22 +48,22 @@ def plot_init_bouts(graph_view, rand_bouts):
     graph_view.plot_init(start_ls, stop_ls, behavs_ls)
 
 
-def test_graph_view_initialization(graph_view):
+def test_graph_view_initialization(graph_view: GraphView):
     # Test that the CvView widget is initialized correctly
     assert graph_view is not None
 
 
-def test_graph_view_plot_init(graph_view):
+def test_graph_view_plot_init(graph_view: GraphView):
     assert graph_view is not None
 
 
-def test_graph_view_plot_update(graph_view):
+def test_graph_view_plot_update(graph_view: GraphView):
     graph_view.plot_update(15, xmin=10, xmax=20)
     assert graph_view is not None
 
 
-def test_graph_view_plot_2_cv(graph_view):
-    img_cv = graph_view.plot_2_cv()
+def test_graph_view_plot2cv(graph_view: GraphView):
+    img_cv = graph_view.plot2cv()
     assert isinstance(img_cv, np.ndarray)
     assert img_cv.shape == (graph_view.height(), graph_view.width(), 3)
 

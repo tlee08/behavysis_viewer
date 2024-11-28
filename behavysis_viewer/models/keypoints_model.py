@@ -6,7 +6,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 from behavysis_core.df_classes.keypoints_df import IndivColumns, KeypointsDf
 from behavysis_core.pydantic_models.experiment_configs import ExperimentConfigs
 
@@ -49,7 +48,7 @@ class KeypointsModel:
         """
         self.raw_dlc_df = KeypointsDf.read_feather(fp)
         self.set_configs(configs)
-        self.dlc_2_annot()
+        self.dlc2annot()
 
     def set_configs(self, configs: ExperimentConfigs):
         """
@@ -66,7 +65,7 @@ class KeypointsModel:
         self.radius = configs.get_ref(configs_filt.radius)
         self.cmap = configs.get_ref(configs_filt.cmap)
 
-    def dlc_2_annot(self):
+    def dlc2annot(self):
         """
         Converts the raw DLC dataframe to a row and column format that is ready for cv2
         video annotation.
@@ -132,8 +131,8 @@ class KeypointsModel:
         for i, (indiv, bpt) in enumerate(self.indivs_bpts_ls):
             if row[f"{indiv}_{bpt}_likelihood"] >= self.pcutoff:
                 cv2.circle(
-                    frame,
-                    (int(row[f"{indiv}_{bpt}_x"]), int(row[f"{indiv}_{bpt}_y"])),
+                    img=frame,
+                    center=(int(row[f"{indiv}_{bpt}_x"]), int(row[f"{indiv}_{bpt}_y"])),
                     radius=self.radius,
                     color=self.colours_ls[i],
                     thickness=-1,

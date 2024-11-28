@@ -12,6 +12,7 @@ from behavysis_core.pydantic_models.bouts import Bouts
 from behavysis_core.pydantic_models.experiment_configs import ExperimentConfigs
 from pyqtgraph import BarGraphItem, InfiniteLine, PlotWidget, mkBrush
 from pyqtgraph.exporters import ImageExporter
+from PySide6.QtGui import QImage
 from PySide6.QtWidgets import QApplication
 
 from behavysis_viewer.utils.constants import VALUE2COLOR
@@ -125,12 +126,13 @@ class GraphView(PlotWidget):
         # Replace old bar with new bar
         self.bars[id_] = new_bar
 
-    def plot_2_cv(self):
+    def plot2cv(self):
         # Making pyqtgraph image exporter to bytes
         exporter = ImageExporter(self.plotItem)
         # exporter.parameters()["width"] = self.width()
         # Exporting to QImage (bytes)
         img_qt = exporter.export(toBytes=True)
+        assert isinstance(img_qt, QImage)
         # QImage to cv2 image (using mixin)
         img_cv = Cv2QtMixin.qt2cv(img_qt)
         # cv2 BGR to RGB
@@ -155,30 +157,28 @@ if __name__ == "__main__":
     behavs_df = BehavDf.read_feather(fp)
     # frames_df to bouts_dict
     bouts_dict = BoutsDf.frames2bouts(behavs_df)
+    fps = 15
     # Updating graph_viewer
-    start_ls = np.array([])
-    stop_ls = np.array([])
-    behavs_ls = np.array([])
-    for behav, bouts_behav_ls in bouts_dict["behaviours"].items():
-        start_ls = np.append(start_ls, [i["start"] for i in bouts_behav_ls])
-        stop_ls = np.append(stop_ls, [i["stop"] for i in bouts_behav_ls])
-        behavs_ls = np.append(behavs_ls, np.repeat(behav, len(bouts_behav_ls)))
-    start_ls = start_ls / 15
-    stop_ls = stop_ls / 15
-    graph_viewer.plot_init(start_ls, stop_ls, behavs_ls)
+    start_ls = np.array([bout.start for bout in bouts_dict.bouts])
+    stop_ls = np.array([bout.stop for bout in bouts_dict.bouts])
+    behavs_ls = np.array([bout.behaviour for bout in bouts_dict.bouts])
+    actual_ls = np.array([bout.actual for bout in bouts_dict.bouts])
+    start_ls = start_ls / fps
+    stop_ls = stop_ls / fps
+    graph_viewer.plot_init(start_ls, stop_ls, behavs_ls, actual_ls)
 
     i = 15
     v = 5
     graph_viewer.plot_update(i, xmin=i - v, xmax=i + v)
 
-    img_cv = graph_viewer.plot_2_cv()
+    img_cv = graph_viewer.plot2cv()
     print(img_cv.shape)
     print(graph_viewer.height(), graph_viewer.width())
     print()
 
     graph_viewer.setFixedSize(200, 1000)
 
-    img_cv = graph_viewer.plot_2_cv()
+    img_cv = graph_viewer.plot2cv()
     print(img_cv.shape)
     print(graph_viewer.height(), graph_viewer.width())
     print()

@@ -50,7 +50,7 @@ def test_cv_view_setFixedSize(cv_view, rand_img):
     assert cv_view.height() == 200
 
 
-def test_cv_view_cv_2_qt_2_cv(cv_view, rand_img):
+def test_cv_view_cv2qt2cv(cv_view, rand_img):
     img_cv2 = Cv2QtMixin.qt2cv(Cv2QtMixin.cv2qt(rand_img))
     assert np.all(rand_img == img_cv2)
 
