@@ -3,10 +3,10 @@ _summary_
 """
 
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from behavysis_core.df_classes.keypoints_df import IndivColumns, KeypointsDf
+from behavysis_core.mixins.misc_mixin import MiscMixin
 from behavysis_core.pydantic_models.experiment_configs import ExperimentConfigs
 
 
@@ -18,7 +18,7 @@ class KeypointsModel:
     raw_dlc_df: pd.DataFrame
     annot_dlc_df: pd.DataFrame
     indivs_bpts_ls: pd.MultiIndex
-    colours_ls: tuple
+    colours_ls: np.ndarray
     pcutoff: float
     radius: int
     colour_level: str
@@ -93,9 +93,9 @@ class KeypointsModel:
             f"{indiv}_{bpt}_{coord}" for indiv, bpt, coord in dlc_df.columns
         ]
         # Making the corresponding colours list for each bodypart instance
-        colours_i, _ = pd.factorize(indivs_bpts_ls.get_level_values(self.colour_level))
-        colours_ls = plt.get_cmap(self.cmap)(colours_i / colours_i.max())
-        colours_ls = colours_ls[:, [2, 1, 0, 3]] * 255
+        # (colours depend on indiv/bpt)
+        measures_ls = indivs_bpts_ls.get_level_values(self.colour_level)
+        colours_ls = MiscMixin.make_colours(measures_ls, self.cmap)
         # Saving data to instance
         self.annot_dlc_df = dlc_df
         self.indivs_bpts_ls = indivs_bpts_ls
